@@ -12,7 +12,7 @@ function App() {
   const resultsRef = useRef(null);
 
   // ⚠️ YOUR KEY IS HERE
-  const API_KEY = "AIzaSyDZKiEANSwFVqMzmlk95owPB6zpCha96I4";
+  const API_KEY = "AIzaSyCNY1tmZCn3lKuna6TQElA2TAdqsEP41fc";
 
   // 2. IMPROVEMENT: Auto-Scroll Effect
   // When 'analysis' finishes, this automatically scrolls down to the results
