@@ -7,20 +7,40 @@ function App() {
   const [previews, setPreviews] = useState([]);
   const [analysis, setAnalysis] = useState("");
   const [loading, setLoading] = useState(false);
+  // 1. IMPROVEMENT: State for the cycling message
+  const [loadingMessage, setLoadingMessage] = useState("Scanning document...");
   
-  // 1. IMPROVEMENT: This reference helps us find the bottom of the page
   const resultsRef = useRef(null);
 
-  // ⚠️ YOUR KEY IS HERE
+  // ⚠️ VERIFY: Ensure this is your NEW API Key (the one you just generated)
   const API_KEY = "AIzaSyCNY1tmZCn3lKuna6TQElA2TAdqsEP41fc";
 
   // 2. IMPROVEMENT: Auto-Scroll Effect
-  // When 'analysis' finishes, this automatically scrolls down to the results
   useEffect(() => {
     if (analysis && resultsRef.current) {
       resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [analysis]);
+
+  // 3. IMPROVEMENT: Cycle through loading messages
+  useEffect(() => {
+    let interval;
+    if (loading) {
+      const messages = [
+        "Reading file content...",
+        "Analyzing legal jargon...",
+        "Checking for red flags...",
+        "Drafting final report..."
+      ];
+      let i = 0;
+      interval = setInterval(() => {
+        i = (i + 1) % messages.length;
+        setLoadingMessage(messages[i]);
+      }, 3000); // Cycles every 3 seconds
+    }
+    return () => clearInterval(interval);
+  }, [loading]);
+
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -79,14 +99,15 @@ function App() {
 
     try {
       const genAI = new GoogleGenerativeAI(API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      // FIXED: Used standard 1.5-flash model to prevent version errors
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       const fileParts = await Promise.all(files.map(fileToGenerativePart));
 
       const prompt = `You are an expert Lawyer. Analyze these ${files.length} documents.
       For each document:
       1. List the Document Name.
-      2. Find 3 'Red Flags'. Use the exact phrase "Red Flag:" for each one.
+      2. Find 'Red Flags'. Use the exact phrase "Red Flag:" for each one.
       3. Explain the risk in 1 simple sentence.
       4. Give a 'Risk Score' (0-10) at the end.
       
@@ -96,8 +117,7 @@ function App() {
       const response = await result.response;
       let text = response.text();
       
-      // 3. IMPROVEMENT: The "Text Polisher"
-      // Automatically adds emojis to make it look nicer
+      // Text Polisher
       text = text.replace(/Red Flag:/g, "⚠️ Red Flag:");
       text = text.replace(/Risk Score/g, "🔥 Risk Score");
       
@@ -141,8 +161,9 @@ function App() {
       </div>
 
       <div style={{ display: "flex", justifyContent: "center", gap: "15px" }}>
+        {/* THIS IS THE KEY VISUAL CHANGE: */}
         <button className="btn-scan" onClick={analyzeContract} disabled={loading}>
-          {loading ? "⏳ ANALYZING..." : `🔍 SCAN FILES`}
+          {loading ? `⏳ ${loadingMessage}` : `🔍 SCAN FILES`}
         </button>
 
         <button className="btn-clear" onClick={handleClear}>
@@ -151,7 +172,6 @@ function App() {
       </div>
 
       {analysis && !loading && (
-        // The 'ref' here tells the code "This is where we scroll to"
         <div className="result-box" ref={resultsRef}>
           <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
           <p>{analysis}</p>
