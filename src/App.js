@@ -13,7 +13,7 @@ function App() {
   const resultsRef = useRef(null);
 
   // ⚠️ VERIFY: Ensure this is your NEW API Key (the one you just generated)
-  const API_KEY = "AIzaSyCNY1tmZCn3lKuna6TQElA2TAdqsEP41fc";
+  const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 
   // 2. IMPROVEMENT: Auto-Scroll Effect
   useEffect(() => {
