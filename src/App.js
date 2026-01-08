@@ -100,7 +100,7 @@ function App() {
     try {
       const genAI = new GoogleGenerativeAI(API_KEY);
       // FIXED: Used standard 1.5-flash model to prevent version errors
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
       const fileParts = await Promise.all(files.map(fileToGenerativePart));
 
