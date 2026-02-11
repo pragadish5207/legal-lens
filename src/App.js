@@ -25,6 +25,8 @@ function App() {
   const [indianLawMode, setIndianLawMode] = useState(false);
   // --- 1. STATE MANAGEMENT ---
   // Core application states for files and results
+  // --- NEW: MANUAL TEXT INPUT STATE ---
+  const [manualText, setManualText] = useState("");
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [analysis, setAnalysis] = useState("");
@@ -202,10 +204,11 @@ function App() {
   // --- 12. CORE LOGIC: THE AI SCANNER ---
   // The primary function that sends data to Gemini and retrieves the report.
   const analyzeContract = async () => {
-    if (files.length === 0) {
-      alert("⚠️ SYSTEM ALERT: Please upload at least one file to begin analysis!");
-      return;
-    }
+   // 1. VALIDATION: Check if user provided EITHER a file OR text
+      if (files.length === 0 && !manualText) {
+        alert("⚠️ SYSTEM ALERT: Please upload a file OR paste some text to begin!");
+        return;
+      }
 
     setLoading(true);
     // Initial status update for the user
@@ -223,25 +226,27 @@ function App() {
       const model = genAI.getGenerativeModel({ model: modelName });
 
       // Convert all uploaded files simultaneously
+      // 2. PREPARE DATA: Convert files
       const fileParts = await Promise.all(files.map(fileToGenerativePart));
 
-      // ⚠️ SMART PROMPT: HANDLES LANGUAGE + INDIAN LAW CONTEXT
+      // 3. SMART PROMPT: Handles Files + Text + Indian Law
       const prompt = `You are an expert Lawyer${indianLawMode ? " specializing in INDIAN LAW (Indian Contract Act, 1872)" : ""}. 
-      Analyze these ${files.length} documents.
+      Analyze the following legal content (${files.length} files and/or pasted text).
       
       CRITICAL INSTRUCTION: Output the entire report in ${language} language.
       
-      ${indianLawMode ? "IMPORTANT: Verify every clause against the 'Indian Contract Act, 1872'. If a clause is void in India (like strict Non-Compete after employment), explicitly mention 'Void under Indian Law'." : ""}
+      ${indianLawMode ? "IMPORTANT: Verify clauses against 'Indian Contract Act, 1872'. SCAM ALERT: Check for 'Security Deposit' or 'Training Fees'. If found, label as '🚨 KNOWN SCAM PATTERN'." : ""}
 
-      For each document:
-      1. List the Document Name.
-      2. Find 'Red Flags'. Label them as "⚠️ Red Flag:" (keep this label in English).
-      3. Explain the risk in ${language} in 1 simple sentence.
-      4. Give a 'Risk Score' (0-10) labeled as "🔥 Risk Score:" (keep this label in English).
+      For the content provided:
+      1. Identify the Document Name (or "Pasted Text").
+      2. Find 'Red Flags'. Label as "⚠️ Red Flag:" (keep English).
+      3. Explain risk in ${language} in 1 sentence.
+      4. Give 'Risk Score' (0-10) labeled as "🔥 Risk Score:" (keep English).
       
-      Format the output cleanly without markdown bolding.`;
+      Format cleanly.`;
 
-      const result = await model.generateContent([prompt, ...fileParts]);
+      // 4. EXECUTE: Send Prompt + Files + Text to Gemini
+      const result = await model.generateContent([prompt, ...fileParts, manualText]);
       const response = await result.response;
       let text = response.text();
       
@@ -398,6 +403,17 @@ function App() {
       </div>
 
       {/* --- ACTION BUTTONS --- */}
+    {/* --- MANUAL TEXT INPUT AREA --- */}
+      <textarea
+        placeholder="Or paste your contract text, email, or WhatsApp message here..."
+        value={manualText}
+        onChange={(e) => setManualText(e.target.value)}
+        style={{
+          width: "100%", height: "120px", marginTop: "20px", padding: "15px",
+          backgroundColor: "#1a1a1a", color: "#fff", border: "1px dashed #555", borderRadius: "10px",
+          fontSize: "14px", fontFamily: "monospace"
+        }}
+      />
       <div style={{ display: "flex", justifyContent: "center", gap: "15px", margin: "20px 0" }}>
        {/* --- LANGUAGE SELECTOR --- */}
        {/* PASTE THIS NEW SEARCH BAR HERE */}
