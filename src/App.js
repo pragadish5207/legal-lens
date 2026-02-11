@@ -32,6 +32,8 @@ function App() {
   const [analysis, setAnalysis] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Scanning document...");
+  // --- NEW: HISTORY STATE (The Vault) ---
+  const [history, setHistory] = useState([]);
   
   // UI and Feature states
   const [availableModels, setAvailableModels] = useState([]);
@@ -255,6 +257,14 @@ function App() {
       text = text.replace(/Risk Score/g, "🔥 Risk Score");
       
       setAnalysis(text);
+      // --- NEW: SAVE TO VAULT ---
+      const newRecord = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString(),
+        score: text.match(/Risk Score:\s*(\d+)/)?.[1] || "?",
+        summary: text.split(".")[0] // Grabs the first sentence
+      };
+      setHistory(prev => [newRecord, ...prev].slice(0, 5)); // Keep only last 5
     } catch (error) {
       console.error("Critical Scanner Error:", error);
       setAnalysis("❌ SYSTEM FAILURE: Unable to process documents. " + error.toString());
@@ -457,6 +467,9 @@ function App() {
       {/* --- RESULTS SECTION: The Colorful Diagnostic --- */}
       {analysis && !loading && (
         <div className="result-box" ref={resultsRef}>
+          {/* --- NEW: VISUAL RISK GAUGE --- */}
+      {/* This "regex" finds the number after 'Risk Score:' in the text */}
+      <RiskGauge score={parseInt(analysis.match(/Risk Score:\s*(\d+)/)?.[1] || 0)} />
           <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
           <div style={{ textAlign: "left" }}>
             {formatAnalysis(analysis)}
@@ -473,6 +486,8 @@ function App() {
                💾 SAVE REPORT
              </button>
           </div>
+          {/* --- NEW: HISTORY VAULT DISPLAY --- */}
+      <HistoryVault history={history} />
           <LocalLegalHelp/>
         </div>
       )}
@@ -519,6 +534,80 @@ const LocalLegalHelp = () => (
       <li><strong>Ahmedabad District Consumer Forum:</strong> Poly Technic Compound, Ambawadi.</li>
       <li><strong>Gujarat State Legal Services Authority:</strong> High Court of Gujarat, Sola. (Phone: 15100)</li>
     </ul>
+  </div>
+);
+// --- NEW: RISK SPEEDOMETER COMPONENT ---
+const RiskGauge = ({ score }) => {
+  // 1. Calculate rotation (0 score = -90deg, 10 score = 90deg)
+  const rotation = (score * 18) - 90;
+  
+  // 2. Determine Color Message
+  let message = "SAFE";
+  let color = "#00ff00"; // Green
+  if (score > 3) { message = "MODERATE"; color = "#ffcc00"; } // Yellow
+  if (score > 7) { message = "DANGER"; color = "#ff0000"; }   // Red
+
+  return (
+    <div style={{ textAlign: "center", margin: "40px 0", padding: "20px", background: "#111", borderRadius: "15px", border: "1px solid #333" }}>
+      <h3 style={{ color: "#fff", marginBottom: "10px", fontSize: "18px" }}>🚀 RISK LEVEL: <span style={{ color: color }}>{message}</span></h3>
+      
+      {/* The Gauge Semi-Circle */}
+      <div style={{
+        width: "200px", height: "100px",
+        background: `linear-gradient(to right, #00ff00, #ffcc00, #ff0000)`,
+        borderRadius: "100px 100px 0 0",
+        position: "relative", margin: "0 auto",
+        boxShadow: "0 0 20px rgba(0,0,0,0.5)",
+        overflow: "hidden" // Keeps needle clean
+      }}>
+        {/* The Needle */}
+        <div style={{
+          width: "4px", height: "90px",
+          backgroundColor: "#fff",
+          position: "absolute", bottom: "0", left: "50%",
+          transformOrigin: "bottom center",
+          transform: `translateX(-50%) rotate(${rotation}deg)`,
+          transition: "transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)", // Bouncy animation
+          zIndex: 10,
+          boxShadow: "0 0 5px black"
+        }} />
+        
+        {/* The Pivot Point (Center Dot) */}
+        <div style={{
+          width: "20px", height: "20px",
+          backgroundColor: "#fff", borderRadius: "50%",
+          position: "absolute", bottom: "-10px", left: "50%",
+          transform: "translateX(-50%)"
+        }} />
+      </div>
+      
+      <p style={{ marginTop: "15px", fontSize: "24px", fontWeight: "bold", color: "#fff" }}>
+        {score}/10
+      </p>
+    </div>
+  );
+};
+// --- NEW: HISTORY VAULT COMPONENT ---
+const HistoryVault = ({ history }) => (
+  <div style={{ marginTop: "40px", padding: "20px", borderTop: "2px solid #333" }}>
+    <h3 style={{ color: "#fff" }}>🗄️ Recent Scans (The Vault)</h3>
+    {history.length === 0 && <p style={{ color: "#666" }}>No scans yet. Scan a document to see it here...</p>}
+    
+    <div style={{ display: "flex", gap: "15px", overflowX: "auto", paddingBottom: "10px" }}>
+      {history.map((record) => (
+        <div key={record.id} style={{
+          minWidth: "250px", background: "#1a1a1a", padding: "15px", borderRadius: "10px",
+          border: "1px solid #333",
+          borderLeft: `5px solid ${parseInt(record.score) > 7 ? "#ff0000" : "#00ff00"}` // Red for Danger, Green for Safe
+        }}>
+          <p style={{ color: "#666", fontSize: "12px", marginBottom: "5px" }}>📅 {record.date}</p>
+          <h4 style={{ color: "#fff", margin: "0 0 10px 0" }}>Risk Score: {record.score}/10</h4>
+          <p style={{ color: "#aaa", fontSize: "12px", height: "40px", overflow: "hidden", lineHeight: "1.4" }}>
+            {record.summary.substring(0, 60)}...
+          </p>
+        </div>
+      ))}
+    </div>
   </div>
 );
 export default App;
