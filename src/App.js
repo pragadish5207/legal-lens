@@ -20,6 +20,9 @@ const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 function App() {
+
+  // --- NEW: INDIAN LAW MODE STATE ---
+  const [indianLawMode, setIndianLawMode] = useState(false);
   // --- 1. STATE MANAGEMENT ---
   // Core application states for files and results
   const [files, setFiles] = useState([]);
@@ -222,12 +225,14 @@ function App() {
       // Convert all uploaded files simultaneously
       const fileParts = await Promise.all(files.map(fileToGenerativePart));
 
-      // The specialized legal prompt designed to find risks without markdown clutter
-      // ⚠️ SMART PROMPT: INJECTS SELECTED LANGUAGE
-      const prompt = `You are an expert Lawyer. Analyze these ${files.length} documents.
+      // ⚠️ SMART PROMPT: HANDLES LANGUAGE + INDIAN LAW CONTEXT
+      const prompt = `You are an expert Lawyer${indianLawMode ? " specializing in INDIAN LAW (Indian Contract Act, 1872)" : ""}. 
+      Analyze these ${files.length} documents.
       
       CRITICAL INSTRUCTION: Output the entire report in ${language} language.
       
+      ${indianLawMode ? "IMPORTANT: Verify every clause against the 'Indian Contract Act, 1872'. If a clause is void in India (like strict Non-Compete after employment), explicitly mention 'Void under Indian Law'." : ""}
+
       For each document:
       1. List the Document Name.
       2. Find 'Red Flags'. Label them as "⚠️ Red Flag:" (keep this label in English).
@@ -263,11 +268,11 @@ function App() {
       let color = "white"; // Default text color
 
       // SCANNABILITY LOGIC: Highlight the most important info in Red/Yellow/Green
-      if (line.includes("🔥 Risk Score: 10") || line.includes("High Risk") || line.includes("⚠️ Red Flag:")) {
+      if (line.includes(" Risk Score: 10") || line.includes("High Risk") || line.includes(" Red Flag:")) {
         color = "#ff6b6b"; // High Alert (Soft Red)
-      } else if (line.includes("🔥 Risk Score: 5") || line.includes("Medium Risk")) {
+      } else if (line.includes(" Risk Score: 5") || line.includes("Medium Risk")) {
         color = "#fcc419"; // Caution (Warning Yellow)
-      } else if (line.includes("Low Risk") || line.includes("Safe") || line.includes("🔥 Risk Score: 0")) {
+      } else if (line.includes("Low Risk") || line.includes("Safe") || line.includes(" Risk Score: 0")) {
         color = "#51cf66"; // Safe (Success Green)
       }
 
@@ -414,6 +419,16 @@ function App() {
     ))}
   </datalist>
 </div>
+{/* --- INDIAN LAW TOGGLE --- */}
+        <label style={{ display: "flex", alignItems: "center", cursor: "pointer", color: "#fff", marginRight: "10px" }}>
+          <input 
+            type="checkbox" 
+            checked={indianLawMode} 
+            onChange={(e) => setIndianLawMode(e.target.checked)}
+            style={{ marginRight: "8px", transform: "scale(1.2)", cursor: "pointer" }}
+          />
+           Indian Law Mode
+        </label>
         <button className="btn-scan" onClick={analyzeContract} disabled={loading}>
           {loading ? `⏳ ${loadingMessage}` : `🔍 SCAN FILES`}
         </button>
@@ -442,6 +457,7 @@ function App() {
                💾 SAVE REPORT
              </button>
           </div>
+          <LocalLegalHelp/>
         </div>
       )}
 
@@ -477,5 +493,16 @@ function App() {
     </div>
   );
 }
-
+// --- NEW: AHMEDABAD LEGAL HELP COMPONENT ---
+const LocalLegalHelp = () => (
+  <div style={{ marginTop: "40px", padding: "20px", borderTop: "2px solid #333", backgroundColor: "#1a1a1a", borderRadius: "10px" }}>
+    <h3 style={{ color: "#ffc107" }}>📍 Local Help (Ahmedabad, Gujarat)</h3>
+    <p style={{ fontSize: "14px", color: "#ccc" }}>If your contract has major Red Flags, contact these local authorities:</p>
+    <ul style={{ color: "#fff", fontSize: "14px", lineHeight: "1.6" }}>
+      <li><strong>Gujarat State Consumer Commission:</strong> Near Gota Cross Road, SG Highway, Ahmedabad.</li>
+      <li><strong>Ahmedabad District Consumer Forum:</strong> Poly Technic Compound, Ambawadi.</li>
+      <li><strong>Gujarat State Legal Services Authority:</strong> High Court of Gujarat, Sola. (Phone: 15100)</li>
+    </ul>
+  </div>
+);
 export default App;
