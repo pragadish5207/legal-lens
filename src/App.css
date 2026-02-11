@@ -174,3 +174,28 @@ button:disabled {
   background-color: #555;
   cursor: wait;
 }
+/* --- ANIMATIONS --- */
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 5px rgba(255, 204, 0, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(255, 204, 0, 0.7); }
+  100% { box-shadow: 0 0 5px rgba(255, 204, 0, 0.4); }
+}
+
+@keyframes button-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* --- APPLY TO YOUR CLASSES --- */
+.upload-box:hover {
+  border-color: #ffcc00 !important;
+  animation: pulse-glow 2s infinite;
+  transition: all 0.3s ease;
+}
+
+.btn-scan {
+  animation: button-bounce 3s infinite ease-in-out;
+  background: linear-gradient(90deg, #007bff, #00c6ff) !important;
+  font-weight: bold !important;
+  letter-spacing: 1px;
+}
