@@ -2,25 +2,59 @@ import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import './App.css';
 
+// --- GLOBAL CONFIGURATION ---
+// Initializing the API key and library outside the component to prevent re-initialization on every render.
+const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
+const genAI = new GoogleGenerativeAI(API_KEY);
+
 function App() {
+  // --- 1. STATE MANAGEMENT ---
+  // Core application states for files and results
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [analysis, setAnalysis] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Scanning document...");
   
-  // NEW: State to store the list of available models
+  // UI and Feature states
   const [availableModels, setAvailableModels] = useState([]);
   const [modelError, setModelError] = useState("");
-const [hasAgreed, setHasAgreed] = useState(false);
-const [suggestion, setSuggestion] = useState("");
+  const [hasAgreed, setHasAgreed] = useState(false);
+  const [suggestion, setSuggestion] = useState("");
+  const [apiStatus, setApiStatus] = useState("checking"); // States: "checking", "online", or "offline"
+  
+  // Refs for UI manipulation
   const resultsRef = useRef(null);
 
-  // ⚠️ API KEY FROM ENVIRONMENT VARIABLES (SECURE)
-  const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
+  // --- 2. EFFECT: API HEALTH CHECK ---
+  // This runs once on mount to verify if the Gemini API is reachable.
+  useEffect(() => {
+    const checkAPI = async () => {
+      try {
+        // We perform a lightweight "ping" to verify the connection
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const result = await model.generateContent("ping"); 
+        const response = await result.response;
+        
+        if (response.text()) {
+          setApiStatus("online");
+        }
+      } catch (error) {
+        console.error("API Health Check Failed:", error);
+        // Only set to offline if the error is specifically about the API Key
+        if (error.message && error.message.includes("API_KEY_INVALID")) {
+           setApiStatus("offline");
+        } else {
+           // For temporary network glitches, we assume online to allow the user to try scanning
+           setApiStatus("online"); 
+        }
+      }
+    };
+    checkAPI();
+  }, []);
 
-  
-  // --- NEW FEATURE: CHECK SUPPORTED MODELS AUTOMATICALLY ---
+  // --- 3. EFFECT: AUTOMATIC MODEL CHECKER ---
+  // Fetches the list of models your specific API key has access to.
   useEffect(() => {
     const checkModels = async () => {
       try {
@@ -29,7 +63,7 @@ const [suggestion, setSuggestion] = useState("");
         
         const data = await response.json();
         
-        // Filter for models that support "generateContent"
+        // We filter the list to find only models that support content generation
         const validModels = data.models?.filter(m => 
           m.supportedGenerationMethods.includes("generateContent")
         );
@@ -37,39 +71,47 @@ const [suggestion, setSuggestion] = useState("");
         setAvailableModels(validModels || []);
       } catch (err) {
         console.error("Model Check Failed:", err);
-        setModelError("Could not verify models. Check API Key permissions.");
+        setModelError("Could not verify models. Check your Vercel/Local environment variables.");
       }
     };
 
-    checkModels();
+    if (API_KEY) {
+      checkModels();
+    }
   }, [API_KEY]);
 
-  // --- AUTO SCROLL EFFECT ---
+  // --- 4. EFFECT: AUTO-SCROLL TO RESULTS ---
+  // Automatically scrolls the page to the diagnostic report once it is generated.
   useEffect(() => {
     if (analysis && resultsRef.current) {
       resultsRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [analysis]);
 
-  // --- LOADING MESSAGE CYCLE ---
+  // --- 5. EFFECT: LOADING MESSAGE CYCLE ---
+  // Rotates through different messages while the AI is thinking to keep the user engaged.
   useEffect(() => {
     let interval;
     if (loading) {
       const messages = [
         "Reading file content...",
         "Analyzing legal jargon...",
+        "Identifying high-risk clauses...",
         "Checking for red flags...",
-        "Drafting final report..."
+        "Scanning for hidden liabilities...",
+        "Finalizing your diagnostic report..."
       ];
       let i = 0;
       interval = setInterval(() => {
         i = (i + 1) % messages.length;
         setLoadingMessage(messages[i]);
-      }, 3000);
+      }, 2500); // Changes message every 2.5 seconds
     }
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // Cleanup when loading stops
   }, [loading]);
 
+  // --- 6. HANDLER: FILE UPLOAD & PREVIEW ---
+  // Processes selected files and creates local URLs for the preview gallery.
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
     if (selectedFiles.length > 0) {
@@ -80,16 +122,19 @@ const [suggestion, setSuggestion] = useState("");
         url: URL.createObjectURL(file)
       }));
       setPreviews(newPreviews);
-      setAnalysis(""); 
+      setAnalysis(""); // Clears old analysis when new files are chosen
     }
   };
-
+  // --- 7. HANDLER: RESET THE DASHBOARD ---
+  // Completely wipes all files, previews, and analysis to start fresh.
   const handleClear = () => {
     setFiles([]);
     setPreviews([]);
     setAnalysis("");
   };
 
+  // --- 8. HANDLER: SAVE TO DEVICE ---
+  // Converts the AI's diagnostic report into a .txt file for the user to keep.
   const handleDownload = () => {
     const element = document.createElement("a");
     const file = new Blob([analysis], {type: 'text/plain'});
@@ -98,20 +143,28 @@ const [suggestion, setSuggestion] = useState("");
     document.body.appendChild(element);
     element.click();
   };
+
+  // --- 9. HANDLER: QUICK COPY ---
+  // Copies the entire analysis to the clipboard for easy sharing.
   const handleCopy = () => {
     navigator.clipboard.writeText(analysis);
     alert("✅ Report copied to clipboard!");
   };
-  const handleSendSuggestion = () => {
-  if (!suggestion.trim()) {
-    alert("⚠️ Please type something before sending!");
-    return;
-  }
-  // For now, this just alerts. Later you can connect this to an email API or Database.
-  alert("🚀 Thanks, Pragadishwar received your suggestion!");
-  setSuggestion(""); // Clears the box
-};
 
+  // --- 10. HANDLER: FEEDBACK SYSTEM ---
+  // Captures and "sends" suggestions. (Future: connect to backend/DB).
+  const handleSendSuggestion = () => {
+    if (!suggestion.trim()) {
+      alert("⚠️ Please type something before sending!");
+      return;
+    }
+    // Personalized confirmation for the developer
+    alert("🚀 Thanks! Your suggestion has been recorded by the system.");
+    setSuggestion(""); // Clears the input box after sending
+  };
+
+  // --- 11. HELPER: FILE PREPARATION ---
+  // Converts standard browser files into the base64 format Gemini requires.
   const fileToGenerativePart = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -129,68 +182,102 @@ const [suggestion, setSuggestion] = useState("");
     });
   };
 
+  // --- 12. CORE LOGIC: THE AI SCANNER ---
+  // The primary function that sends data to Gemini and retrieves the report.
   const analyzeContract = async () => {
     if (files.length === 0) {
-      alert("⚠️ SYSTEM ALERT: Upload at least one file!");
+      alert("⚠️ SYSTEM ALERT: Please upload at least one file to begin analysis!");
       return;
     }
 
     setLoading(true);
-    setAnalysis(`Analyzing ${files.length} document(s)... Please wait...`);
+    // Initial status update for the user
+    setAnalysis(`Analyzing ${files.length} document(s)... Please wait for the system to process...`);
 
     try {
-      const genAI = new GoogleGenerativeAI(API_KEY);
+      // ⚠️ DYNAMIC MODEL SELECTION: 
+      // Uses the first available model found on mount, or falls back to 'gemini-1.5-flash'.
+      const modelName = availableModels.length > 0 
+        ? availableModels[0].name.replace("models/", "") 
+        : "gemini-1.5-flash";
       
-      // ⚠️ WE USE THE FIRST AVAILABLE MODEL OR FALLBACK TO STANDARD
-      const modelName = availableModels.length > 0 ? availableModels[0].name.replace("models/", "") : "gemini-1.5-flash";
-      console.log("Using Model:", modelName);
+      console.log("System Status: Active. Model in use:", modelName);
       
       const model = genAI.getGenerativeModel({ model: modelName });
 
+      // Convert all uploaded files simultaneously
       const fileParts = await Promise.all(files.map(fileToGenerativePart));
 
-      const prompt = `You are an expert Lawyer. Analyze these ${files.length} documents.
-      For each document:
-      1. List the Document Name.
-      2. Find 'Red Flags'. Use the exact phrase "Red Flag:" for each one.
-      3. Explain the risk in 1 simple sentence.
-      4. Give a 'Risk Score' (0-10) at the end.
+      // The specialized legal prompt designed to find risks without markdown clutter
+      const prompt = `You are a high-level Legal Expert. Analyze these ${files.length} documents.
+      For each document uploaded:
+      1. List the full Document Name.
+      2. Identify 'Red Flags'. For every flag, use the exact phrase "Red Flag:".
+      3. Briefly explain the risk of that flag in one clear sentence.
+      4. Provide a final 'Risk Score' (on a scale of 0-10) at the very end of that document's section.
       
-      Format the output cleanly without using markdown bolding (avoid **).`;
+      CRITICAL: Return plain text only. Do not use bolding or special markdown formatting (no **).`;
 
       const result = await model.generateContent([prompt, ...fileParts]);
       const response = await result.response;
       let text = response.text();
       
+      // UI POLISH: Replace text triggers with visual icons for better UX
       text = text.replace(/Red Flag:/g, "⚠️ Red Flag:");
       text = text.replace(/Risk Score/g, "🔥 Risk Score");
       
       setAnalysis(text);
     } catch (error) {
-      setAnalysis("❌ SYSTEM FAILURE: " + error.toString());
+      console.error("Critical Scanner Error:", error);
+      setAnalysis("❌ SYSTEM FAILURE: Unable to process documents. " + error.toString());
     }
 
     setLoading(false);
   };
 
+  // --- 13. UI HELPER: THE COLOR PARSER ---
+  // This logic applies conditional coloring to the AI's response in real-time.
+  const formatAnalysis = (text) => {
+    if (!text) return null;
+
+    // Splits the long text block into individual lines for color evaluation
+    return text.split('\n').map((line, index) => {
+      let color = "white"; // Default text color
+
+      // SCANNABILITY LOGIC: Highlight the most important info in Red/Yellow/Green
+      if (line.includes("🔥 Risk Score: 10") || line.includes("High Risk") || line.includes("⚠️ Red Flag:")) {
+        color = "#ff6b6b"; // High Alert (Soft Red)
+      } else if (line.includes("🔥 Risk Score: 5") || line.includes("Medium Risk")) {
+        color = "#fcc419"; // Caution (Warning Yellow)
+      } else if (line.includes("Low Risk") || line.includes("Safe") || line.includes("🔥 Risk Score: 0")) {
+        color = "#51cf66"; // Safe (Success Green)
+      }
+
+      return (
+        <p key={index} style={{ 
+          color: color, 
+          margin: "8px 0", 
+          fontWeight: color !== "white" ? "bold" : "normal",
+          lineHeight: "1.5" 
+        }}>
+          {line}
+        </p>
+      );
+    });
+  };
+  // --- 14. THE MAIN VISUAL COMPONENT ---
   return (
     <div className="App">
-      {/* --- GATEKEEPER MODAL --- */}
+      {/* --- GATEKEEPER MODAL: Safety First --- */}
       {!hasAgreed && (
         <div style={{
-          position: "fixed",
-          top: 0, left: 0, width: "100vw", height: "100vh",
-          backgroundColor: "rgba(0,0,0,0.95)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          zIndex: 10000, padding: "20px"
+          position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+          backgroundColor: "rgba(0,0,0,0.95)", display: "flex", alignItems: "center",
+          justifyContent: "center", zIndex: 10000, padding: "20px"
         }}>
           <div style={{
-            backgroundColor: "#1a1a1a",
-            padding: "40px",
-            borderRadius: "20px",
-            maxWidth: "600px",
-            border: "2px solid #ffcc00",
-            textAlign: "center",
+            backgroundColor: "#1a1a1a", padding: "40px", borderRadius: "20px",
+            maxWidth: "600px", border: "2px solid #ffcc00", textAlign: "center",
             boxShadow: "0 0 30px rgba(255, 204, 0, 0.2)"
           }}>
             <h2 style={{color: "#ffcc00", marginBottom: "20px"}}>⚖️ LEGAL-LENS PRO: USER AGREEMENT</h2>
@@ -209,14 +296,8 @@ const [suggestion, setSuggestion] = useState("");
               <button 
                 onClick={() => setHasAgreed(true)}
                 style={{
-                  padding: "15px 30px", 
-                  backgroundColor: "#ffcc00", 
-                  color: "#000", 
-                  border: "none", 
-                  borderRadius: "8px", 
-                  fontWeight: "bold", 
-                  cursor: "pointer",
-                  fontSize: "16px"
+                  padding: "15px 30px", backgroundColor: "#ffcc00", color: "#000",
+                  border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", fontSize: "16px"
                 }}
               >
                 I AGREE & CONTINUE
@@ -224,12 +305,8 @@ const [suggestion, setSuggestion] = useState("");
               <button 
                 onClick={() => window.location.href = "https://google.com"}
                 style={{
-                  padding: "15px 30px", 
-                  backgroundColor: "transparent", 
-                  color: "#ff4444", 
-                  border: "1px solid #ff4444", 
-                  borderRadius: "8px", 
-                  cursor: "pointer"
+                  padding: "15px 30px", backgroundColor: "transparent", color: "#ff4444",
+                  border: "1px solid #ff4444", borderRadius: "8px", cursor: "pointer"
                 }}
               >
                 I DISAGREE (EXIT)
@@ -238,31 +315,34 @@ const [suggestion, setSuggestion] = useState("");
           </div>
         </div>
       )}
-      <h1>⚡ Legal-Lens Pro ⚡</h1>
-      <p>AI-Powered Contract Analysis</p>
+
+      {/* --- HEADER SECTION --- */}
+      <h1>
+        ⚡ Legal-Lens Pro ⚡ 
+        <span style={{ 
+          fontSize: '12px', verticalAlign: 'middle', marginLeft: '10px',
+          color: apiStatus === "online" ? "#28a745" : apiStatus === "offline" ? "#dc3545" : "#ffc107"
+        }}>
+          ● {apiStatus.toUpperCase()}
+        </span>
+      </h1>
+      <p style={{ color: "#aaa", marginBottom: "30px" }}>AI-Powered Contract Analysis & Risk Detection</p>
       
-      {/* --- NEW SECTION: API DEBUGGER --- */}
-      {/* --- SMART STATUS: ONLY SHOWS IF BROKEN --- */}
+      {/* --- SYSTEM ERROR DISPLAY --- */}
       {modelError && (
         <div style={{ 
-          backgroundColor: "#2d0a0a", 
-          padding: "10px", 
-          margin: "10px auto", 
-          borderRadius: "5px", 
-          maxWidth: "600px", 
-          fontSize: "12px", 
-          border: "1px solid #ff4444", 
-          color: "#ff8888" 
+          backgroundColor: "#2d0a0a", padding: "10px", margin: "10px auto", 
+          borderRadius: "5px", maxWidth: "600px", fontSize: "12px", 
+          border: "1px solid #ff4444", color: "#ff8888" 
         }}>
           <strong>🚨 SYSTEM ERROR:</strong> {modelError}
         </div>
       )}
 
+      {/* --- UPLOAD SECTION --- */}
       <div className="upload-box">
         <input 
-          type="file" 
-          multiple 
-          accept="image/*,application/pdf" 
+          type="file" multiple accept="image/*,application/pdf" 
           onChange={handleFileChange} 
         />
         <p style={{marginTop: "10px", fontSize: "12px", color: "#888"}}>
@@ -270,13 +350,17 @@ const [suggestion, setSuggestion] = useState("");
         </p>
       </div>
 
+      {/* --- PREVIEW GALLERY --- */}
       <div className="preview-container">
         {previews.map((file, index) => (
           <div key={index} className="preview-item">
             {file.type.includes("image") ? (
               <img src={file.url} alt="preview" style={{width: "80px", height: "80px", objectFit: "cover", borderRadius: "4px"}} />
             ) : (
-              <div style={{width: "80px", height: "80px", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: "#e0e0e0"}}>
+              <div style={{
+                width: "80px", height: "80px", display: "flex", alignItems: "center", 
+                justifyContent: "center", flexDirection: "column", color: "#e0e0e0"
+              }}>
                 📄 <span style={{fontSize: "9px", marginTop: "5px"}}>{file.name.substring(0, 10)}...</span>
               </div>
             )}
@@ -284,7 +368,8 @@ const [suggestion, setSuggestion] = useState("");
         ))}
       </div>
 
-      <div style={{ display: "flex", justifyContent: "center", gap: "15px" }}>
+      {/* --- ACTION BUTTONS --- */}
+      <div style={{ display: "flex", justifyContent: "center", gap: "15px", margin: "20px 0" }}>
         <button className="btn-scan" onClick={analyzeContract} disabled={loading}>
           {loading ? `⏳ ${loadingMessage}` : `🔍 SCAN FILES`}
         </button>
@@ -294,15 +379,17 @@ const [suggestion, setSuggestion] = useState("");
         </button>
       </div>
 
+      {/* --- RESULTS SECTION: The Colorful Diagnostic --- */}
       {analysis && !loading && (
         <div className="result-box" ref={resultsRef}>
           <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
-          <p style={{whiteSpace: "pre-line"}}>{analysis}</p>
+          <div style={{ textAlign: "left" }}>
+            {formatAnalysis(analysis)}
+          </div>
           
-          <div style={{marginTop: "20px", textAlign: "right", borderTop: "1px solid #444", paddingTop: "15px"}}>
+          <div style={{marginTop: "25px", textAlign: "right", borderTop: "1px solid #444", paddingTop: "15px"}}>
              <button 
-               className="btn-download" 
-               onClick={handleCopy} 
+               className="btn-download" onClick={handleCopy} 
                style={{marginRight: "10px", backgroundColor: "#333"}}
              >
                📋 COPY TEXT
@@ -310,71 +397,39 @@ const [suggestion, setSuggestion] = useState("");
              <button className="btn-download" onClick={handleDownload}>
                💾 SAVE REPORT
              </button>
-             {/* --- SUGGESTION BOX --- */}
+          </div>
+        </div>
+      )}
+
+      {/* --- SUGGESTION BOX: Developer Feedback --- */}
       <div style={{
-        marginTop: "40px",
-        padding: "20px",
-        backgroundColor: "#111",
-        borderRadius: "10px",
-        border: "1px solid #333",
-        maxWidth: "600px",
-        margin: "40px auto",
-        textAlign: "center"
+        marginTop: "60px", padding: "20px", backgroundColor: "#111", 
+        borderRadius: "10px", border: "1px solid #333", maxWidth: "600px", 
+        margin: "60px auto", textAlign: "center"
       }}>
         <h4 style={{color: "#007bff", marginBottom: "10px"}}>💡 Have a suggestion?</h4>
         <textarea 
-          placeholder="Type your feedback or feature ideas here..."
-          value={suggestion}
-          onChange={(e) => setSuggestion(e.target.value)}
+          placeholder="Help me improve Legal-Lens! Type your feedback here..."
+          value={suggestion} onChange={(e) => setSuggestion(e.target.value)}
           style={{
-            width: "100%",
-            height: "80px",
-            backgroundColor: "#222",
-            color: "#fff",
-            border: "1px solid #444",
-            borderRadius: "5px",
-            padding: "10px",
-            fontSize: "14px",
-            resize: "none",
-            marginBottom: "10px",
-            outline: "none"
+            width: "100%", height: "80px", backgroundColor: "#222", color: "#fff",
+            border: "1px solid #444", borderRadius: "5px", padding: "10px", 
+            fontSize: "14px", resize: "none", marginBottom: "10px", outline: "none"
           }}
         />
-        <button 
-          onClick={handleSendSuggestion}
-          style={{
-            padding: "10px 25px",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-            fontWeight: "bold",
-            transition: "0.3s"
-          }}
-          onMouseOver={(e) => e.target.style.backgroundColor = "#0056b3"}
-          onMouseOut={(e) => e.target.style.backgroundColor = "#007bff"}
-        >
+        <button onClick={handleSendSuggestion} className="btn-send-suggestion">
           SEND FEEDBACK
         </button>
       </div>
 
-      {/* --- LEGAL DISCLAIMER FOOTER --- */}
+      {/* --- FOOTER: Professional Branding --- */}
       <footer style={{ 
-        marginTop: "50px", 
-        padding: "20px", 
-        borderTop: "1px solid #333", 
-        fontSize: "11px", 
-        color: "#666", 
-        textAlign: "center",
-        lineHeight: "1.5"
+        marginTop: "80px", padding: "30px", borderTop: "1px solid #333", 
+        fontSize: "12px", color: "#666", textAlign: "center", lineHeight: "1.8"
       }}>
-        <p>⚠️ <strong>DISCLAIMER:</strong> Legal-Lens Pro is an AI-powered tool for educational purposes only. It is not a substitute for professional legal advice.</p>
-        <p>© 2026 Pragadishwar - Built with Gemini AI</p>
+        <p>⚠️ <strong>LEGAL DISCLAIMER:</strong> This AI tool provides general information and is not a substitute for professional legal advice.</p>
+        <p style={{ color: "#007bff", fontWeight: "bold" }}>© 2026 Pragadishwar - Built with Google Gemini API</p>
       </footer>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
