@@ -199,3 +199,17 @@ button:disabled {
   font-weight: bold !important;
   letter-spacing: 1px;
 }
+/* --- APP.CSS (Add to bottom) --- */
+
+/* Define the breathing animation */
+@keyframes pulse-green {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+/* Create the class to apply it */
+.live-pulse {
+  animation: pulse-green 2s infinite ease-in-out;
+  text-shadow: 0 0 8px rgba(40, 167, 69, 0.6); /* Optional: Adds a subtle glowing effect */
+}

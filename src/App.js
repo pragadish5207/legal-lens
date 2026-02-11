@@ -2,6 +2,18 @@ import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import './App.css';
 
+// --- GLOBAL LANGUAGE LIST (50+ Languages) ---
+const LANGUAGES = [
+  "English", "Hindi", "Gujarati", "Tamil", "Telugu", "Kannada", "Malayalam", 
+  "Marathi", "Bengali", "Punjabi", "Urdu", "Odia", "Assamese", "Maithili", "Sanskrit",
+  "Spanish", "French", "German", "Mandarin Chinese", "Japanese", "Korean", 
+  "Russian", "Arabic", "Portuguese", "Italian", "Dutch", "Turkish", 
+  "Vietnamese", "Thai", "Indonesian", "Polish", "Ukrainian", "Hebrew", 
+  "Swedish", "Norwegian", "Danish", "Finnish", "Greek", "Hungarian", "Czech",
+  "Romanian", "Bulgarian", "Serbian", "Croatian", "Slovak", "Lithuanian",
+  "Latvian", "Estonian", "Slovenian", "Persian", "Pashto", "Swahili", "Amharic"
+];
+
 // --- GLOBAL CONFIGURATION ---
 // Initializing the API key and library outside the component to prevent re-initialization on every render.
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
@@ -21,6 +33,8 @@ function App() {
   const [modelError, setModelError] = useState("");
   const [hasAgreed, setHasAgreed] = useState(false);
   const [suggestion, setSuggestion] = useState("");
+  // --- NEW: LANGUAGE STATE ---
+  const [language, setLanguage] = useState("English");
   const [apiStatus, setApiStatus] = useState("checking"); // States: "checking", "online", or "offline"
   
   // Refs for UI manipulation
@@ -209,14 +223,18 @@ function App() {
       const fileParts = await Promise.all(files.map(fileToGenerativePart));
 
       // The specialized legal prompt designed to find risks without markdown clutter
-      const prompt = `You are a high-level Legal Expert. Analyze these ${files.length} documents.
-      For each document uploaded:
-      1. List the full Document Name.
-      2. Identify 'Red Flags'. For every flag, use the exact phrase "Red Flag:".
-      3. Briefly explain the risk of that flag in one clear sentence.
-      4. Provide a final 'Risk Score' (on a scale of 0-10) at the very end of that document's section.
+      // ⚠️ SMART PROMPT: INJECTS SELECTED LANGUAGE
+      const prompt = `You are an expert Lawyer. Analyze these ${files.length} documents.
       
-      CRITICAL: Return plain text only. Do not use bolding or special markdown formatting (no **).`;
+      CRITICAL INSTRUCTION: Output the entire report in ${language} language.
+      
+      For each document:
+      1. List the Document Name.
+      2. Find 'Red Flags'. Label them as "⚠️ Red Flag:" (keep this label in English).
+      3. Explain the risk in ${language} in 1 simple sentence.
+      4. Give a 'Risk Score' (0-10) labeled as "🔥 Risk Score:" (keep this label in English).
+      
+      Format the output cleanly without markdown bolding.`;
 
       const result = await model.generateContent([prompt, ...fileParts]);
       const response = await result.response;
@@ -319,12 +337,18 @@ function App() {
       {/* --- HEADER SECTION --- */}
       <h1>
         ⚡ Legal-Lens Pro ⚡ 
-        <span style={{ 
-          fontSize: '12px', verticalAlign: 'middle', marginLeft: '10px',
-          color: apiStatus === "online" ? "#28a745" : apiStatus === "offline" ? "#dc3545" : "#ffc107"
-        }}>
-          ● {apiStatus.toUpperCase()}
-        </span>
+        <span 
+  className={apiStatus === "online" ? "live-pulse" : ""}
+  style={{ 
+    fontSize: '12px', 
+    verticalAlign: 'middle', 
+    marginLeft: '10px',
+    transition: "color 0.3s ease",
+    color: apiStatus === "online" ? "#28a745" : apiStatus === "offline" ? "#dc3545" : "#ffc107"
+  }}
+>
+  ● {apiStatus.toUpperCase()}
+</span>
       </h1>
       <p style={{ color: "#aaa", marginBottom: "30px" }}>AI-Powered Contract Analysis & Risk Detection</p>
       
@@ -370,6 +394,26 @@ function App() {
 
       {/* --- ACTION BUTTONS --- */}
       <div style={{ display: "flex", justifyContent: "center", gap: "15px", margin: "20px 0" }}>
+       {/* --- LANGUAGE SELECTOR --- */}
+       {/* PASTE THIS NEW SEARCH BAR HERE */}
+<div style={{ display: "inline-block", marginRight: "10px" }}>
+  <input 
+    list="language-options" 
+    placeholder="Type language..." 
+    value={language} 
+    onChange={(e) => setLanguage(e.target.value)}
+    style={{
+      padding: "10px", borderRadius: "5px", border: "1px solid #444",
+      backgroundColor: "#222", color: "#fff", width: "150px",
+      cursor: "text", fontSize: "14px"
+    }}
+  />
+  <datalist id="language-options">
+    {LANGUAGES.map((lang) => (
+      <option key={lang} value={lang} />
+    ))}
+  </datalist>
+</div>
         <button className="btn-scan" onClick={analyzeContract} disabled={loading}>
           {loading ? `⏳ ${loadingMessage}` : `🔍 SCAN FILES`}
         </button>
