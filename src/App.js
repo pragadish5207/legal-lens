@@ -1,6 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import './App.css';
+// ---  THEME COLOR DEFINITIONS ---
+const themes = {
+  pro: {
+    bg: "#121212",
+    accent: "#007bff", // Professional Blue
+    card: "#1a1a1a",
+    text: "#ffffff"
+  },
+  cyber: {
+    bg: "#050505",
+    accent: "#ff00ff", // Neon Pink
+    secondary: "#00ffff", // Electric Cyan
+    card: "#000",
+    text: "#00ffff",
+    glow: "0 0 15px #ff00ff"
+  }
+};
 
 // --- GLOBAL LANGUAGE LIST (50+ Languages) ---
 const LANGUAGES = [
@@ -32,8 +49,6 @@ function App() {
   const [analysis, setAnalysis] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Scanning document...");
-  // --- NEW: HISTORY STATE (The Vault) ---
-  const [history, setHistory] = useState([]);
   
   // UI and Feature states
   const [availableModels, setAvailableModels] = useState([]);
@@ -43,7 +58,8 @@ function App() {
   // --- NEW: LANGUAGE STATE ---
   const [language, setLanguage] = useState("English");
   const [apiStatus, setApiStatus] = useState("checking"); // States: "checking", "online", or "offline"
-  
+  // --- NEW: CYBERPUNK THEME STATE ---
+  const [cyberMode, setCyberMode] = useState(false);
   // Refs for UI manipulation
   const resultsRef = useRef(null);
 
@@ -252,19 +268,7 @@ function App() {
       const response = await result.response;
       let text = response.text();
       
-      // UI POLISH: Replace text triggers with visual icons for better UX
-      text = text.replace(/Red Flag:/g, "⚠️ Red Flag:");
-      text = text.replace(/Risk Score/g, "🔥 Risk Score");
-      
       setAnalysis(text);
-      // --- NEW: SAVE TO VAULT ---
-      const newRecord = {
-        id: Date.now(),
-        date: new Date().toLocaleDateString(),
-        score: text.match(/Risk Score:\s*(\d+)/)?.[1] || "?",
-        summary: text.split(".")[0] // Grabs the first sentence
-      };
-      setHistory(prev => [newRecord, ...prev].slice(0, 5)); // Keep only last 5
     } catch (error) {
       console.error("Critical Scanner Error:", error);
       setAnalysis("❌ SYSTEM FAILURE: Unable to process documents. " + error.toString());
@@ -305,7 +309,28 @@ function App() {
   };
   // --- 14. THE MAIN VISUAL COMPONENT ---
   return (
-    <div className="App">
+    <div className="App" style={{ 
+      backgroundColor: cyberMode ? themes.cyber.bg : themes.pro.bg, 
+      color: cyberMode ? themes.cyber.text : themes.pro.text,
+      minHeight: "100vh",
+      transition: "all 0.5s ease", // Smooth fade between modes
+      padding: "20px"
+    }}>
+    {/* ---  CYBER-TOGGLE BUTTON --- */}
+      <button 
+        onClick={() => setCyberMode(!cyberMode)}
+        style={{
+          position: "fixed", top: "20px", right: "20px",
+          backgroundColor: cyberMode ? themes.cyber.accent : "#333",
+          color: "#fff", border: "none", borderRadius: "5px",
+          padding: "10px 15px", cursor: "pointer", zIndex: 1000,
+          boxShadow: cyberMode ? themes.cyber.glow : "none",
+          fontWeight: "bold", transition: "0.3s",
+          border: cyberMode ? `1px solid ${themes.cyber.secondary}` : "none"
+        }}
+      >
+        {cyberMode ? "🚀 PRO MODE" : "🌃 CYBER MODE"}
+      </button>
       {/* --- GATEKEEPER MODAL: Safety First --- */}
       {!hasAgreed && (
         <div style={{
@@ -466,10 +491,25 @@ function App() {
 
       {/* --- RESULTS SECTION: The Colorful Diagnostic --- */}
       {analysis && !loading && (
-        <div className="result-box" ref={resultsRef}>
-          {/* --- NEW: VISUAL RISK GAUGE --- */}
-      {/* This "regex" finds the number after 'Risk Score:' in the text */}
-      <RiskGauge score={parseInt(analysis.match(/Risk Score:\s*(\d+)/)?.[1] || 0)} />
+        <div 
+        className="result-box" 
+        ref={resultsRef}
+        style={{
+          backgroundColor: cyberMode ? "rgba(0, 0, 0, 0.8)" : "#fff",
+          border: cyberMode ? `1px solid ${themes.cyber.secondary}` : "none",
+          boxShadow: cyberMode ? "0 0 25px rgba(0, 255, 255, 0.2)" : "0 4px 15px rgba(0,0,0,0.1)",
+          color: cyberMode ? "#fff" : "#333",
+          borderRadius: "15px",
+          padding: "20px",
+          marginTop: "20px",
+          transition: "0.5s"
+        }}
+      >
+          {/* --- UPDATE: PASS CYBER MODE TO GAUGE --- */}
+     <RiskGauge 
+  score={parseInt(analysis.match(/Risk Score[:*]*\s*(\d+)/i)?.[1] || 0)} 
+  cyberMode={cyberMode} 
+/>
           <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
           <div style={{ textAlign: "left" }}>
             {formatAnalysis(analysis)}
@@ -487,7 +527,6 @@ function App() {
              </button>
           </div>
           {/* --- NEW: HISTORY VAULT DISPLAY --- */}
-      <HistoryVault history={history} />
           <LocalLegalHelp/>
         </div>
       )}
@@ -536,78 +575,62 @@ const LocalLegalHelp = () => (
     </ul>
   </div>
 );
-// --- NEW: RISK SPEEDOMETER COMPONENT ---
-const RiskGauge = ({ score }) => {
-  // 1. Calculate rotation (0 score = -90deg, 10 score = 90deg)
+// --- UPDATED: THEMED RISK SPEEDOMETER ---
+const RiskGauge = ({ score, cyberMode }) => {
   const rotation = (score * 18) - 90;
   
-  // 2. Determine Color Message
   let message = "SAFE";
-  let color = "#00ff00"; // Green
-  if (score > 3) { message = "MODERATE"; color = "#ffcc00"; } // Yellow
-  if (score > 7) { message = "DANGER"; color = "#ff0000"; }   // Red
+  let color = "#00ff00"; 
+  if (score > 3) { message = "MODERATE"; color = "#ffcc00"; } 
+  if (score > 7) { message = "DANGER"; color = "#ff0000"; }
 
   return (
-    <div style={{ textAlign: "center", margin: "40px 0", padding: "20px", background: "#111", borderRadius: "15px", border: "1px solid #333" }}>
-      <h3 style={{ color: "#fff", marginBottom: "10px", fontSize: "18px" }}>🚀 RISK LEVEL: <span style={{ color: color }}>{message}</span></h3>
+    <div style={{ 
+      textAlign: "center", margin: "40px 0", padding: "20px", 
+      background: cyberMode ? themes.cyber.card : "#111", 
+      borderRadius: "15px", 
+      border: cyberMode ? `2px solid ${themes.cyber.accent}` : "1px solid #333",
+      boxShadow: cyberMode ? themes.cyber.glow : "none",
+      transition: "0.5s"
+    }}>
+      <h3 style={{ 
+        color: cyberMode ? themes.cyber.secondary : "#fff", 
+        marginBottom: "10px", fontSize: "18px",
+        textShadow: cyberMode ? `0 0 5px ${themes.cyber.secondary}` : "none"
+      }}>
+        🚀 RISK LEVEL: <span style={{ color: color }}>{message}</span>
+      </h3>
       
-      {/* The Gauge Semi-Circle */}
+      {/* The Gauge */}
       <div style={{
         width: "200px", height: "100px",
-        background: `linear-gradient(to right, #00ff00, #ffcc00, #ff0000)`,
+        background: cyberMode 
+          ? `linear-gradient(to right, #00ff00, ${themes.cyber.accent}, #ff0000)` 
+          : `linear-gradient(to right, #00ff00, #ffcc00, #ff0000)`,
         borderRadius: "100px 100px 0 0",
         position: "relative", margin: "0 auto",
-        boxShadow: "0 0 20px rgba(0,0,0,0.5)",
-        overflow: "hidden" // Keeps needle clean
+        overflow: "hidden"
       }}>
-        {/* The Needle */}
         <div style={{
           width: "4px", height: "90px",
           backgroundColor: "#fff",
           position: "absolute", bottom: "0", left: "50%",
           transformOrigin: "bottom center",
           transform: `translateX(-50%) rotate(${rotation}deg)`,
-          transition: "transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)", // Bouncy animation
+          transition: "transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
           zIndex: 10,
           boxShadow: "0 0 5px black"
         }} />
-        
-        {/* The Pivot Point (Center Dot) */}
-        <div style={{
-          width: "20px", height: "20px",
-          backgroundColor: "#fff", borderRadius: "50%",
-          position: "absolute", bottom: "-10px", left: "50%",
-          transform: "translateX(-50%)"
-        }} />
       </div>
       
-      <p style={{ marginTop: "15px", fontSize: "24px", fontWeight: "bold", color: "#fff" }}>
+      <p style={{ 
+        marginTop: "15px", fontSize: "24px", fontWeight: "bold", 
+        color: cyberMode ? themes.cyber.secondary : "#fff" 
+      }}>
         {score}/10
       </p>
     </div>
   );
 };
-// --- NEW: HISTORY VAULT COMPONENT ---
-const HistoryVault = ({ history }) => (
-  <div style={{ marginTop: "40px", padding: "20px", borderTop: "2px solid #333" }}>
-    <h3 style={{ color: "#fff" }}>🗄️ Recent Scans (The Vault)</h3>
-    {history.length === 0 && <p style={{ color: "#666" }}>No scans yet. Scan a document to see it here...</p>}
-    
-    <div style={{ display: "flex", gap: "15px", overflowX: "auto", paddingBottom: "10px" }}>
-      {history.map((record) => (
-        <div key={record.id} style={{
-          minWidth: "250px", background: "#1a1a1a", padding: "15px", borderRadius: "10px",
-          border: "1px solid #333",
-          borderLeft: `5px solid ${parseInt(record.score) > 7 ? "#ff0000" : "#00ff00"}` // Red for Danger, Green for Safe
-        }}>
-          <p style={{ color: "#666", fontSize: "12px", marginBottom: "5px" }}>📅 {record.date}</p>
-          <h4 style={{ color: "#fff", margin: "0 0 10px 0" }}>Risk Score: {record.score}/10</h4>
-          <p style={{ color: "#aaa", fontSize: "12px", height: "40px", overflow: "hidden", lineHeight: "1.4" }}>
-            {record.summary.substring(0, 60)}...
-          </p>
-        </div>
-      ))}
-    </div>
-  </div>
-);
+
 export default App;
