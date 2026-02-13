@@ -277,36 +277,41 @@ function App() {
     setLoading(false);
   };
 
-  // --- 13. UI HELPER: THE COLOR PARSER ---
-  // This logic applies conditional coloring to the AI's response in real-time.
+ // --- FIX: THEME-AWARE FORMATTER ---
   const formatAnalysis = (text) => {
     if (!text) return null;
+    
+    return text.split("\n").map((line, index) => {
+      // Clean up stars ** from Markdown
+      const cleanLine = line.replace(/\*\*/g, "").replace(/\*/g, "");
 
-    // Splits the long text block into individual lines for color evaluation
-    return text.split('\n').map((line, index) => {
-      let color = "white"; // Default text color
-
-      // SCANNABILITY LOGIC: Highlight the most important info in Red/Yellow/Green
-      if (line.includes(" Risk Score: 10") || line.includes("High Risk") || line.includes(" Red Flag:")) {
-        color = "#ff6b6b"; // High Alert (Soft Red)
-      } else if (line.includes(" Risk Score: 5") || line.includes("Medium Risk")) {
-        color = "#fcc419"; // Caution (Warning Yellow)
-      } else if (line.includes("Low Risk") || line.includes("Safe") || line.includes(" Risk Score: 0")) {
-        color = "#51cf66"; // Safe (Success Green)
+      // 1. Highlight "Red Flags" or "Risks" in RED
+      if (cleanLine.match(/Red Flag/i) || cleanLine.match(/Risk/i)) {
+        return (
+          <p key={index} style={{ 
+            color: "#ff4444", 
+            fontWeight: "bold", 
+            marginTop: "15px",
+            textShadow: cyberMode ? "0 0 5px rgba(255, 0, 0, 0.5)" : "none"
+          }}>
+            {cleanLine}
+          </p>
+        );
       }
-
+      
+      // 2. Normal Text - NO FORCED COLOR (Inherits from Parent)
       return (
         <p key={index} style={{ 
-          color: color, 
-          margin: "8px 0", 
-          fontWeight: color !== "white" ? "bold" : "normal",
-          lineHeight: "1.5" 
+          marginBottom: "8px", 
+          lineHeight: "1.6", 
+          opacity: 0.9 
         }}>
-          {line}
+          {cleanLine}
         </p>
       );
     });
   };
+  
   // --- 14. THE MAIN VISUAL COMPONENT ---
   return (
     <div className="App" style={{ 
