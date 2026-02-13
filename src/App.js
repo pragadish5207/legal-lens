@@ -511,7 +511,7 @@ function App() {
   cyberMode={cyberMode} 
 />
           <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
-          <div style={{ textAlign: "left" }}>
+          <div style={{ textAlign: "left", color: cyberMode ? "#fff" : "#000000" }}>
             {formatAnalysis(analysis)}
           </div>
           
