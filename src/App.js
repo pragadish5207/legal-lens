@@ -321,75 +321,52 @@ function App() {
       transition: "all 0.5s ease", // Smooth fade between modes
       padding: "20px"
     }}>
-     {/* --- UNIVERSAL RESPONSIVE ENGINE (Mobile, Tablet, Laptop, TV) --- */}
+{/* --- NUCLEAR RESPONSIVE FIX (Forces Padding Everywhere) --- */}
       <style>{`
-        /* 🛠 GLOBAL FIX: This prevents padding from cutting off text */
-        * { box-sizing: border-box; }
+        /* 1. GLOBAL RESET: Force everything to stay inside the box */
+        * { box-sizing: border-box !important; }
+        
+        body, html, #root {
+          width: 100% !important;
+          max-width: 100vw !important;
+          overflow-x: hidden !important; /* Kills the side-scroll */
+          margin: 0 !important;
+        }
 
-        /* 📱 MOBILE (Portrait Phones) */
+        /* 2. THE APP CONTAINER: The "Safe Zone" */
+        .App {
+          width: 100% !important;
+          padding: 20px !important; /* THIS IS THE GAP YOU WANT */
+          display: flex;
+          flex-direction: column;
+          align-items: center; /* Centers everything */
+        }
+
+        /* 3. MOBILE SPECIFIC (Phones) */
         @media (max-width: 767px) {
-          .App { 
-            padding: 20px !important; 
-            width: 100% !important; 
-            overflow-x: hidden !important; 
-          }
+          .App { padding: 15px !important; } /* Safe gap on small phones */
           
-          /* Force container to fit inside screen with breathing room */
-          .result-box { 
-            width: 100% !important; 
-            padding: 15px !important; 
-            margin-top: 20px !important; 
-            border-radius: 12px !important;
+          /* Force the header to wrap if it's too long */
+          h1, h2, h3 { 
+            width: 100% !important;
+            word-wrap: break-word !important;
+            text-align: center !important; 
           }
 
-          /* Make text readable on small screens */
-          h1 { font-size: 24px !important; line-height: 1.3 !important; }
-          p, h3, li { word-wrap: break-word !important; } 
+          /* Force the result box to fit */
+          .result-box {
+            width: 100% !important;
+            margin: 10px 0 !important;
+            padding: 15px !important;
+          }
 
-          /* Buttons: Stack them so they are easy to tap */
+          /* Stack the buttons */
           button {
             width: 100% !important;
-            display: block !important;
-            margin: 10px 0 !important;
-            padding: 12px !important;
+            margin: 8px 0 !important;
           }
-          /* Exception: Keep Cyber Toggle Button small */
+          /* Keep Cyber Toggle small */
           button[style*="fixed"] { width: auto !important; margin: 0 !important; }
-          
-          /* Hide shapes to save space */
-          .shape { display: none !important; }
-        }
-
-        /* 📟 TABLET (iPads & Large Phones) */
-        @media (min-width: 768px) and (max-width: 1023px) {
-          .App { padding: 40px !important; }
-          .result-box { padding: 30px !important; margin: 20px auto !important; }
-          button { font-size: 16px !important; }
-        }
-
-        /* 💻 LAPTOP (Standard Screens) */
-        @media (min-width: 1024px) and (max-width: 1599px) {
-          .result-box { max-width: 850px; margin: 30px auto; }
-          .App { padding-top: 40px; }
-        }
-
-        /* 📺 4K TV / LARGE MONITORS (Ultra-Wide) */
-        @media (min-width: 1600px) {
-          .App { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-          }
-          .result-box { 
-            max-width: 1200px; 
-            padding: 50px !important; 
-            font-size: 20px !important; /* Bigger text for TV */
-          }
-          h1 { font-size: 42px !important; }
-          h3 { font-size: 28px !important; }
-          p { line-height: 1.8 !important; }
-          button { padding: 20px 40px !important; font-size: 20px !important; }
         }
       `}</style>
     {/* ---  CYBER-TOGGLE BUTTON --- */}
