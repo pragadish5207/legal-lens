@@ -39,9 +39,7 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 
 function App() {
 
-  const filteredLanguages = LANGUAGES.filter(lang => 
-    lang.toLowerCase().startsWith(language.toLowerCase())
-  );
+  
   // --- NEW: INDIAN LAW MODE STATE ---
   const [indianLawMode, setIndianLawMode] = useState(false);
   // --- 1. STATE MANAGEMENT ---
@@ -61,6 +59,9 @@ function App() {
   const [suggestion, setSuggestion] = useState("");
   // --- NEW: LANGUAGE STATE ---
   const [language, setLanguage] = useState("English");
+  const filteredLanguages = LANGUAGES.filter(lang => 
+    lang.toLowerCase().startsWith(language.toLowerCase())
+  );
   const [apiStatus, setApiStatus] = useState("checking"); // States: "checking", "online", or "offline"
   // --- NEW: CYBERPUNK THEME STATE ---
   const [cyberMode, setCyberMode] = useState(false);
