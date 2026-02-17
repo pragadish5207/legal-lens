@@ -568,7 +568,7 @@ function App() {
   cyberMode={cyberMode} 
 />
           <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
-         <div style={{ textAlign: "left", color: cyberMode ? "#fff" : "#000000" }}>
+        <div style={{ textAlign: "left", color: cyberMode ? "#fff" : "#000000" }}>
   {analysis && (
     analysis.toLowerCase().includes("red flag") || analysis.toLowerCase().includes("risk") 
       ? formatAnalysis(analysis) 
