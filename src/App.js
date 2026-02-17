@@ -39,6 +39,9 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 
 function App() {
 
+  const filteredLanguages = LANGUAGES.filter(lang => 
+    lang.toLowerCase().startsWith(language.toLowerCase())
+  );
   // --- NEW: INDIAN LAW MODE STATE ---
   const [indianLawMode, setIndianLawMode] = useState(false);
   // --- 1. STATE MANAGEMENT ---
@@ -519,7 +522,7 @@ function App() {
     }}
   />
   <datalist id="language-options">
-    {LANGUAGES.map((lang) => (
+    {filteredLanguages.map((lang) => (
       <option key={lang} value={lang} />
     ))}
   </datalist>
@@ -566,12 +569,12 @@ function App() {
 />
           <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
           <div style={{ textAlign: "left", color: cyberMode ? "#fff" : "#000000" }}>
-            {analysis.toLowerCase().includes("red flag") || analysis.toLowerCase().includes("risk") 
+          {analysis.toLowerCase().includes("red flag") || analysis.toLowerCase().includes("risk") 
   ? formatAnalysis(analysis) 
   : <p style={{ color: "#28a745", fontWeight: "bold", textAlign: "center", padding: "20px" }}>
       ✅ SYSTEM SCAN COMPLETE: No high-risk clauses or red flags detected in this document.
     </p>
-}
+  }
           </div>
           
           <div style={{marginTop: "25px", textAlign: "right", borderTop: "1px solid #444", paddingTop: "15px"}}>
