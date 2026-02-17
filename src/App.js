@@ -1,3 +1,4 @@
+import LocalHelp from './LocalHelp';
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import './App.css';
@@ -579,8 +580,6 @@ function App() {
                💾 SAVE REPORT
              </button>
           </div>
-          {/* --- NEW: HISTORY VAULT DISPLAY --- */}
-          <LocalLegalHelp/>
         </div>
       )}
 
@@ -604,7 +603,10 @@ function App() {
           SEND FEEDBACK
         </button>
       </div>
-
+{/* --- ADD THE NEW COMPONENT HERE --- */}
+      <div className="section-container" style={{ maxWidth: '600px', margin: '20px auto' }}>
+        <LocalHelp />
+      </div>
       {/* --- FOOTER: Professional Branding --- */}
       <footer style={{ 
         marginTop: "80px", padding: "30px", borderTop: "1px solid #333", 
@@ -616,18 +618,7 @@ function App() {
     </div>
   );
 }
-// --- NEW: AHMEDABAD LEGAL HELP COMPONENT ---
-const LocalLegalHelp = () => (
-  <div style={{ marginTop: "40px", padding: "20px", borderTop: "2px solid #333", backgroundColor: "#1a1a1a", borderRadius: "10px" }}>
-    <h3 style={{ color: "#ffc107" }}>📍 Local Help (Ahmedabad, Gujarat)</h3>
-    <p style={{ fontSize: "14px", color: "#ccc" }}>If your contract has major Red Flags, contact these local authorities:</p>
-    <ul style={{ color: "#fff", fontSize: "14px", lineHeight: "1.6" }}>
-      <li><strong>Gujarat State Consumer Commission:</strong> Near Gota Cross Road, SG Highway, Ahmedabad.</li>
-      <li><strong>Ahmedabad District Consumer Forum:</strong> Poly Technic Compound, Ambawadi.</li>
-      <li><strong>Gujarat State Legal Services Authority:</strong> High Court of Gujarat, Sola. (Phone: 15100)</li>
-    </ul>
-  </div>
-);
+
 // --- UPDATED: THEMED RISK SPEEDOMETER ---
 const RiskGauge = ({ score, cyberMode }) => {
   const rotation = (score * 18) - 90;
