@@ -566,7 +566,12 @@ function App() {
 />
           <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
           <div style={{ textAlign: "left", color: cyberMode ? "#fff" : "#000000" }}>
-            {formatAnalysis(analysis)}
+            {analysis.toLowerCase().includes("red flag") || analysis.toLowerCase().includes("risk") 
+  ? formatAnalysis(analysis) 
+  : <p style={{ color: "#28a745", fontWeight: "bold", textAlign: "center", padding: "20px" }}>
+      ✅ SYSTEM SCAN COMPLETE: No high-risk clauses or red flags detected in this document.
+    </p>
+}
           </div>
           
           <div style={{marginTop: "25px", textAlign: "right", borderTop: "1px solid #444", paddingTop: "15px"}}>

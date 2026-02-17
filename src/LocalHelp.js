@@ -24,6 +24,14 @@ const LocalHelp = ({ cyberMode }) => {
     window.open(mapUrl, '_blank');
   };
 
+  const filteredStates = districtData.states.filter(s => 
+    s.state.toLowerCase().startsWith(selectedState.toLowerCase())
+  );
+
+  const filteredDistricts = districts.filter(d => 
+    d.toLowerCase().startsWith(selectedDistrict.toLowerCase())
+  );
+
  return (
     <div style={{ 
       padding: '20px', 
@@ -54,7 +62,7 @@ const LocalHelp = ({ cyberMode }) => {
           }}
         />
         <datalist id="state-list">
-          {districtData.states.map((s, index) => (
+          {filteredStates.map((s, index) => (
             <option key={index} value={s.state} />
           ))}
         </datalist>
@@ -80,7 +88,7 @@ const LocalHelp = ({ cyberMode }) => {
           }}
         />
         <datalist id="district-list">
-          {districts.map((d, index) => (
+          {filteredDistricts.map((d, index) => (
             <option key={index} value={d} />
           ))}
         </datalist>
@@ -104,7 +112,7 @@ const LocalHelp = ({ cyberMode }) => {
       </button>
 
       <div style={{ marginTop: '15px', fontSize: '12px', opacity: 0.8 }}>
-        📞 NALSA National Helpline: <b>15100</b>
+       📞 NALSA National Helpline: <a href="tel:15100" style={{ color: cyberMode ? '#00ffff' : '#007bff', fontWeight: 'bold', textDecoration: 'none', marginLeft: '5px' }}>15100</a>
       </div>
     </div>
   );
