@@ -24,7 +24,7 @@ const LocalHelp = ({ cyberMode }) => {
     window.open(mapUrl, '_blank');
   };
 
-  return (
+ return (
     <div style={{ 
       padding: '20px', 
       border: cyberMode ? '1px solid #00ffff' : '1px solid #ccc', 
@@ -35,45 +35,55 @@ const LocalHelp = ({ cyberMode }) => {
     }}>
       <h3 style={{ color: cyberMode ? '#00ffff' : '#333' }}>⚖️ Find Legal Help Near You</h3>
       
+      {/* Searchable State Input */}
       <div style={{ marginBottom: '10px' }}>
-        <label>Select State: </label>
-        <select 
+        <label>Search State: </label>
+        <input 
+          list="state-list"
+          placeholder="Type state name..."
           onChange={handleStateChange}
           value={selectedState}
           style={{ 
             marginLeft: '10px', 
-            padding: '5px',
+            padding: '8px',
+            borderRadius: '5px',
             backgroundColor: cyberMode ? '#111' : '#fff',
             color: cyberMode ? '#00ffff' : '#000',
-            border: cyberMode ? '1px solid #00ffff' : '1px solid #ccc'
+            border: cyberMode ? '1px solid #00ffff' : '1px solid #ccc',
+            width: '200px'
           }}
-        >
-          <option value="">-- Choose State --</option>
+        />
+        <datalist id="state-list">
           {districtData.states.map((s, index) => (
-            <option key={index} value={s.state}>{s.state}</option>
+            <option key={index} value={s.state} />
           ))}
-        </select>
+        </datalist>
       </div>
 
+      {/* Searchable District Input */}
       <div style={{ marginBottom: '15px' }}>
-        <label>Select District: </label>
-        <select 
+        <label>Search District: </label>
+        <input 
+          list="district-list"
+          placeholder={selectedState ? "Type district..." : "Select state first"}
           disabled={!selectedState}
           onChange={(e) => setSelectedDistrict(e.target.value)}
           value={selectedDistrict}
           style={{ 
             marginLeft: '10px', 
-            padding: '5px',
+            padding: '8px',
+            borderRadius: '5px',
             backgroundColor: cyberMode ? '#111' : '#fff',
             color: cyberMode ? '#00ffff' : '#000',
-            border: cyberMode ? '1px solid #00ffff' : '1px solid #ccc'
+            border: cyberMode ? '1px solid #00ffff' : '1px solid #ccc',
+            width: '200px'
           }}
-        >
-          <option value="">-- Choose District --</option>
+        />
+        <datalist id="district-list">
           {districts.map((d, index) => (
-            <option key={index} value={d}>{d}</option>
+            <option key={index} value={d} />
           ))}
-        </select>
+        </datalist>
       </div>
 
       <button 
@@ -82,15 +92,20 @@ const LocalHelp = ({ cyberMode }) => {
         style={{
             backgroundColor: selectedDistrict ? (cyberMode ? '#ff00ff' : '#007bff') : '#cccccc',
             color: 'white',
-            padding: '10px 20px',
+            padding: '10px 25px',
             border: 'none',
             borderRadius: '5px',
             cursor: selectedDistrict ? 'pointer' : 'not-allowed',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            boxShadow: cyberMode && selectedDistrict ? '0 0 10px #ff00ff' : 'none'
         }}
       >
         Find Nearest Center 🚀
       </button>
+
+      <div style={{ marginTop: '15px', fontSize: '12px', opacity: 0.8 }}>
+        📞 NALSA National Helpline: <b>15100</b>
+      </div>
     </div>
   );
 };
