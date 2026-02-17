@@ -568,14 +568,15 @@ function App() {
   cyberMode={cyberMode} 
 />
           <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
-          <div style={{ textAlign: "left", color: cyberMode ? "#fff" : "#000000" }}>
-          {analysis.toLowerCase().includes("red flag") || analysis.toLowerCase().includes("risk") 
-  ? formatAnalysis(analysis) 
-  : <p style={{ color: "#28a745", fontWeight: "bold", textAlign: "center", padding: "20px" }}>
-      ✅ SYSTEM SCAN COMPLETE: No high-risk clauses or red flags detected in this document.
-    </p>
-  }
-          </div>
+         <div style={{ textAlign: "left", color: cyberMode ? "#fff" : "#000000" }}>
+  {analysis && (
+    analysis.toLowerCase().includes("red flag") || analysis.toLowerCase().includes("risk") 
+      ? formatAnalysis(analysis) 
+      : <div style={{ color: "#28a745", fontWeight: "bold", textAlign: "center", padding: "20px", border: "1px solid #28a745", borderRadius: "10px", marginTop: "10px" }}>
+          ✅ SYSTEM SCAN COMPLETE: No high-risk clauses or red flags detected in this document.
+        </div>
+  )}
+</div>
           
           <div style={{marginTop: "25px", textAlign: "right", borderTop: "1px solid #444", paddingTop: "15px"}}>
              <button 
