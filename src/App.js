@@ -605,7 +605,7 @@ function App() {
       </div>
 {/* --- ADD THE NEW COMPONENT HERE --- */}
       <div className="section-container" style={{ maxWidth: '600px', margin: '20px auto' }}>
-        <LocalHelp />
+        <LocalHelp cyberMode={cyberMode} />
       </div>
       {/* --- FOOTER: Professional Branding --- */}
       <footer style={{ 

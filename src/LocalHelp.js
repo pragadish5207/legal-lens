@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import districtData from './districtData.json';
 
-const LocalHelp = () => {
+const LocalHelp = ({ cyberMode }) => {
   const [selectedState, setSelectedState] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [districts, setDistricts] = useState([]);
