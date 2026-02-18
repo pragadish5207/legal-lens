@@ -686,5 +686,5 @@ const RiskGauge = ({ score, cyberMode }) => {
     </div>
   );
 };
-
+}
 export default App;
