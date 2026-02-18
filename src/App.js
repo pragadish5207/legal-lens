@@ -571,7 +571,7 @@ function App() {
           <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
       <div style={{ textAlign: "left", color: cyberMode ? "#fff" : "#000000" }}>
   {analysis ? (
-   analysis.toLowerCase().includes("red flag") && !analysis.toLowerCase().includes("red flag: none")
+   (parseInt(analysis.match(/Risk Score[:*]*\s*(\d+)/i)?.[1] || 0) > 1)
    
       ? formatAnalysis(analysis) 
       : <div style={{ color: "#28a745", fontWeight: "bold", textAlign: "center", padding: "20px" }}>
