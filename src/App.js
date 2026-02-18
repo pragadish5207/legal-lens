@@ -194,12 +194,15 @@ function App() {
   };
 
   // --- 10. HANDLER: FEEDBACK SYSTEM ---
-  // Captures and "sends" suggestions. (Future: connect to backend/DB).
+  // Captures and "sends" suggestions.
   const handleSendSuggestion = () => {
-    if (!suggestion.trim()) {
-      alert("⚠️ Please type something before sending!");
-      return;
-    }
+    if (!suggestion.trim()) return;
+    const subject = "Feedback for Legal-Lens Pro";
+    const body = `Hey Dev, here is my feedback:\n\n${suggestion}`;
+    window.location.href = `mailto:pragadishwar5207@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setSuggestion(""); // Clears the box after sending
+    alert("Opening your email client to send feedback!");
+  };
     // Personalized confirmation for the developer
     alert("🚀 Thanks! Your suggestion has been recorded by the system.");
     setSuggestion(""); // Clears the input box after sending
