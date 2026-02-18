@@ -631,7 +631,6 @@ function App() {
       </footer>
     </div>
   );
-}
 
 // --- UPDATED: THEMED RISK SPEEDOMETER ---
 const RiskGauge = ({ score, cyberMode }) => {
