@@ -203,10 +203,7 @@ function App() {
     setSuggestion(""); // Clears the box after sending
     alert("Opening your email client to send feedback!");
   };
-    // Personalized confirmation for the developer
-    alert("🚀 Thanks! Your suggestion has been recorded by the system.");
-    setSuggestion(""); // Clears the input box after sending
-  };
+  
 
   // --- 11. HELPER: FILE PREPARATION ---
   // Converts standard browser files into the base64 format Gemini requires.
