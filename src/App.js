@@ -2,6 +2,14 @@ import LocalHelp from './LocalHelp';
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import './App.css';
+// React Router imports
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+
+// Importing your new pages
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Terms from './pages/Terms';
+import HowToUse from './pages/HowToUse';
 // ---  THEME COLOR DEFINITIONS ---
 const themes = {
   pro: {
@@ -379,7 +387,9 @@ function App() {
 
   // --- 14. THE MAIN VISUAL COMPONENT ---
   return (
+    <Router>
     <div className="App" style={{ 
+      
       backgroundColor: cyberMode ? themes.cyber.bg : themes.pro.bg, 
       color: cyberMode ? themes.cyber.text : themes.pro.text,
       minHeight: "100vh",
@@ -434,6 +444,21 @@ function App() {
           button[style*="fixed"] { width: auto !important; margin: 0 !important; }
         }
       `}</style>
+      {/* --- NAVIGATION MENU --- */}
+<nav style={{ padding: '20px', textAlign: 'center', borderBottom: '1px solid #333', marginBottom: '20px' }}>
+  <Link to="/" style={{ color: '#4da6ff', margin: '0 15px', textDecoration: 'none', fontWeight: 'bold' }}>Scanner (Home)</Link>
+  <Link to="/how-to-use" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>How to Use</Link>
+  <Link to="/about" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>About</Link>
+  <Link to="/contact" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>Contact</Link>
+  <Link to="/terms" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>Terms</Link>
+</nav>
+<Routes>
+  <Route path="/how-to-use" element={<HowToUse />} />
+  <Route path="/about" element={<About />} />
+  <Route path="/contact" element={<Contact />} />
+  <Route path="/terms" element={<Terms />} />
+  <Route path="/" element={
+    <>
     {/* ---  CYBER-TOGGLE BUTTON --- */}
       <button 
         onClick={() => setCyberMode(!cyberMode)}
@@ -678,6 +703,9 @@ function App() {
       <div className="section-container" style={{ maxWidth: '600px', margin: '20px auto' }}>
         <LocalHelp cyberMode={cyberMode} />
       </div>
+      </>
+  } />
+</Routes>
       {/* --- FOOTER: Professional Branding --- */}
       <footer style={{ 
         marginTop: "80px", padding: "30px", borderTop: "1px solid #333", 
@@ -687,6 +715,7 @@ function App() {
         <p style={{ color: "#007bff", fontWeight: "bold" }}>© 2026 Pragadishwar - Built with Google Gemini API</p>
       </footer>
     </div>
+  </Router>
   );
 
 
