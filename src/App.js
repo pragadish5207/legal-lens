@@ -389,15 +389,15 @@ function App() {
   // --- 14. THE MAIN VISUAL COMPONENT ---
   return (
     <Router>
-      <ScrollToTop />
-    <div className="App" style={{ 
       
+    <div className="App" style={{ 
       backgroundColor: cyberMode ? themes.cyber.bg : themes.pro.bg, 
       color: cyberMode ? themes.cyber.text : themes.pro.text,
       minHeight: "100vh",
       transition: "all 0.5s ease", // Smooth fade between modes
       padding: "20px"
-    }}>
+      
+    }}><ScrollToTop />
 {/* --- NUCLEAR RESPONSIVE FIX (Forces Padding Everywhere) --- */}
       <style>{`
         /* 1. GLOBAL RESET: Force everything to stay inside the box */
