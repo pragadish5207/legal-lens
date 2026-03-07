@@ -5,11 +5,16 @@ const ScrollToTop = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // This tells the browser to jump to coordinates (0,0) - the very top-left
+    // This finds the actual "App" div and scrolls IT to the top
+    const appElement = document.querySelector(".App");
+    if (appElement) {
+      appElement.scrollTo(0, 0);
+    }
+    // And we still trigger the window just in case
     window.scrollTo(0, 0);
-  }, [pathname]); // This runs every time the "pathname" (the URL) changes
+  }, [pathname]);
 
-  return null; // This component doesn't need to show anything, it just "works" in the background
+  return null;
 };
 
 export default ScrollToTop;
