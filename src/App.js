@@ -263,14 +263,24 @@ function App() {
   // Captures and "sends" suggestions.
   const handleSendSuggestion = () => {
   if (!suggestion.trim()) return;
-  const subject = "Feedback for Legal-Lens Pro";
-  const body = `Hey Dev, here is my feedback:\n\n${suggestion}`;
-  
-  // This version opens your email app without opening a new browser tab
-  const mailtoUrl = `mailto:pragadishwar5207@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  window.location.href = mailtoUrl; 
 
-  setSuggestion(""); 
+  // 1. Show the confirmation box (Yes/No)
+  const userConfirmed = window.confirm("Open your email app to send this feedback?");
+
+  // 2. If the user clicks "Yes" (OK)
+  if (userConfirmed) {
+    const subject = "legal lens feedback";
+    const body = suggestion;
+    
+    const mailtoUrl = `mailto:pragadishwar5207@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Opens the email app directly
+    window.location.href = mailtoUrl;
+
+    // Clear the box ONLY if they sent it
+    setSuggestion("");
+  }
+  // 3. If they click "No" (Cancel), nothing happens and the text stays in the box!
 };
 
   // --- 11. HELPER: FILE PREPARATION ---
