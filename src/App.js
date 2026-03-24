@@ -262,13 +262,17 @@ function App() {
   // --- 10. HANDLER: FEEDBACK SYSTEM ---
   // Captures and "sends" suggestions.
   const handleSendSuggestion = () => {
-    if (!suggestion.trim()) return;
-    const subject = "Feedback for Legal-Lens Pro";
-    const body = `Hey Dev, here is my feedback:\n\n${suggestion}`;
-    window.location.href = `mailto:pragadishwar5207@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setSuggestion(""); // Clears the box after sending
-    alert("Opening your email client to send feedback!");
-  };
+  if (!suggestion.trim()) return;
+  const subject = "Feedback for Legal-Lens Pro";
+  const body = `Hey Dev, here is my feedback:\n\n${suggestion}`;
+  
+  // Using window.open is more reliable for mailto links in modern browsers
+  const mailtoUrl = `mailto:pragadishwar5207@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(mailtoUrl, '_blank'); 
+
+  setSuggestion(""); 
+  // Removed the alert here because it can block the mail client from opening
+};
 
   // --- 11. HELPER: FILE PREPARATION ---
   // Converts standard browser files into the base64 format Gemini requires.
@@ -481,7 +485,7 @@ function App() {
                 <title>Contact Legal-Lens Pro - Support & Feedback</title>
                 <meta name="description" content="Get in touch with the creator of Legal-Lens Pro for feedback or inquiries." />
               </Helmet>
-              <About />
+              <Contact />
             </>
           } />
           <Route path="/terms" element={
