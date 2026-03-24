@@ -3,63 +3,114 @@ import React from 'react';
 function HowToUse() {
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}>How to Use Legal-Lens Pro</h1>
-      
-      <p style={styles.paragraph}>
-        Scanning your documents for hidden risks is quick and easy. Follow these simple steps to protect yourself:
-      </p>
+      {/* --- HERO SECTION --- */}
+      <header style={styles.header}>
+        <h1 style={styles.heading}>Master the AI Legal Scan</h1>
+        <p style={styles.paragraph}>
+          Protecting yourself from unfair clauses is simple. Follow this 5-step 
+          guide to get a professional-grade <strong>AI contract analysis</strong> 
+          using Legal-Lens Pro.
+        </p>
+      </header>
 
-      <h2 style={styles.subheading}>Step 1: Provide Your Document</h2>
-      <p style={styles.paragraph}>
-        You have multiple ways to input your contract. You can paste text directly, upload an image, upload a PDF file, or even use a combination of text, images, and PDFs all at once.
-      </p>
+      {/* --- STEP 1 --- */}
+      <section style={styles.stepSection}>
+        <h2 style={styles.subheading}>01. Provide Your Document</h2>
+        <p style={styles.paragraph}>
+          Our <strong>Multimodal AI</strong> accepts multiple inputs simultaneously. 
+          You can paste raw text from WhatsApp/Email, upload <strong>OCR-ready images</strong> 
+          of paper contracts, or drop <strong>PDF files</strong> directly into the scanner.
+        </p>
+      </section>
 
-      <h2 style={styles.subheading}>Step 2: Customize Your Settings</h2>
-      <p style={styles.paragraph}>
-        Tailor the scan to your needs. If applicable, select "Indian Mode" for insights specific to Indian law. You can also choose a translation language from the dropdown if you need the final analysis in a language other than English.
-      </p>
+      {/* --- STEP 2 --- */}
+      <section style={styles.stepSection}>
+        <h2 style={styles.subheading}>02. Activate Indian Law Mode</h2>
+        <p style={styles.paragraph}>
+          To get insights based on the <strong>Indian Contract Act 1872</strong>, 
+          ensure the "Indian Law Mode" toggle is active. If you need the report 
+          in your native tongue, select one of <strong>50+ regional languages</strong> 
+          from the dropdown menu.
+        </p>
+      </section>
 
-      <h2 style={styles.subheading}>Step 3: Click Scan</h2>
-      <p style={styles.paragraph}>
-        Once your files are uploaded and your settings are configured, simply click the "Scan" button to start the AI analysis.
-      </p>
+      {/* --- STEP 3 --- */}
+      <section style={styles.stepSection}>
+        <h2 style={styles.subheading}>03. Run the AI Diagnostic</h2>
+        <p style={styles.paragraph}>
+          Click the <strong>"Scan Files"</strong> button. Our system uses 
+          <strong> Gemini 1.5 Flash</strong> to cross-reference your document 
+          against standard legal safety protocols in real-time.
+        </p>
+      </section>
 
-      <h2 style={styles.subheading}>Step 4: Review and Save the Report</h2>
-      <p style={styles.paragraph}>
-        Carefully read through the results to understand the potential risks hidden in the fine print. Once you have reviewed the "Red Flags," you can easily copy the generated report to your clipboard or download it for your personal records.
-      </p>
+      {/* --- STEP 4 --- */}
+      <section style={styles.stepSection}>
+        <h2 style={styles.subheading}>04. Analyze the Risk-O-Meter</h2>
+        <p style={styles.paragraph}>
+          Review the generated <strong>Risk Score</strong>. Red flags will highlight 
+          dangerous clauses, while green markers indicate standard terms. You can 
+          <strong> Download the Report</strong> as a text file for your personal legal records.
+        </p>
+      </section>
 
-      <h2 style={styles.subheading}>Step 5: Use the Local Help Dashboard</h2>
-      <p style={styles.paragraph}>
-        If the scan reveals serious issues and you need legal assistance, go to our Local Help dashboard. First, select your state, then select your district, and click the "Find" button. This will automatically open Google Maps to show you the relevant legal authorities or help centers nearby.
-      </p>
-    </div>
+      {/* --- STEP 5 --- */}
+      <section style={styles.stepSection}>
+        <h2 style={styles.subheading}>05. Connect with DLSA</h2>
+        <p style={styles.paragraph}>
+          If serious risks are found, use our <strong>Local Help Dashboard</strong>. 
+          By selecting your State and District, you can locate the nearest 
+          <strong> District Legal Services Authority (DLSA)</strong> on Google Maps 
+          for free legal assistance.
+        </p>
+      </section>
+      </div>
   );
 }
 
+// --- STYLING ENGINE ---
 const styles = {
   container: {
-    padding: "40px",
-    color: "#ffffff",
-    maxWidth: "800px",
+    padding: "60px 20px",
+    color: "#e0e0e0",
+    maxWidth: "900px",
     margin: "0 auto",
-    lineHeight: "1.6",
-    fontFamily: "Arial, sans-serif"
+    lineHeight: "1.7",
+    fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    backgroundColor: "transparent"
+  },
+  header: {
+    marginBottom: "50px",
+    textAlign: "center"
   },
   heading: {
-    fontSize: "2.5rem",
-    marginBottom: "20px",
-    color: "#4da6ff" 
+    fontSize: "3rem",
+    marginBottom: "15px",
+    background: "linear-gradient(90deg, #4da6ff, #b3d9ff)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
+    fontWeight: "800"
   },
   subheading: {
-    fontSize: "1.5rem",
-    marginTop: "25px",
-    marginBottom: "10px",
-    color: "#4da6ff"
+    fontSize: "1.8rem",
+    marginTop: "40px",
+    marginBottom: "15px",
+    color: "#4da6ff",
+    borderLeft: "4px solid #4da6ff",
+    paddingLeft: "15px"
   },
   paragraph: {
     fontSize: "1.1rem",
-    marginBottom: "15px"
+    marginBottom: "20px",
+    color: "#ccc"
+  },
+  stepSection: {
+    marginBottom: "40px",
+    padding: "30px",
+    backgroundColor: "#111",
+    borderRadius: "15px",
+    border: "1px solid #222",
+    transition: "0.3s"
   }
 };
 

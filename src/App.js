@@ -578,8 +578,9 @@ function App() {
               )}
 
               {/* --- HEADER SECTION --- */}
+              {/* --- HEADER SECTION --- */}
               <h1>
-                ⚡ Legal-Lens Pro ⚡ 
+                ⚡ Legal-Lens Pro: AI Contract Analyzer ⚡ 
                 <span 
                   className={apiStatus === "online" ? "live-pulse" : ""}
                   style={{ 
@@ -593,8 +594,10 @@ function App() {
                   ● {apiStatus.toUpperCase()}
                 </span>
               </h1>
-              <p style={{ color: "#aaa", marginBottom: "30px" }}>AI-Powered Contract Analysis & Risk Detection</p>
-              
+              <p style={{ color: "#aaa", marginBottom: "30px" }}>
+                The first AI-powered scanner for the <strong>Indian Contract Act 1872</strong>. 
+                Detect legal risks and red flags in seconds.
+              </p>              
               {/* --- SYSTEM ERROR DISPLAY --- */}
               {modelError && (
                 <div style={{ 
