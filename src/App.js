@@ -1,3 +1,4 @@
+import { Helmet } from 'react-helmet-async';
 import LocalHelp from './LocalHelp';
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -11,6 +12,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Terms from './pages/Terms';
 import HowToUse from './pages/HowToUse';
+
 // ---  THEME COLOR DEFINITIONS ---
 const themes = {
   pro: {
@@ -42,11 +44,8 @@ const LANGUAGES = [
 ];
 
 // --- GLOBAL CONFIGURATION ---
-// Initializing the API key and library outside the component to prevent re-initialization on every render.
 const API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
 const genAI = new GoogleGenerativeAI(API_KEY);
-
-
 
 // --- 2. RISK GAUGE COMPONENT ---
 const RiskGauge = ({ score, cyberMode }) => {
@@ -95,7 +94,6 @@ const RiskGauge = ({ score, cyberMode }) => {
           boxShadow: "0 0 5px black"
         }} />
       </div>
-      
       <p style={{ 
         marginTop: "15px", fontSize: "24px", fontWeight: "bold", 
         color: cyberMode ? themes.cyber.secondary : "#fff" 
@@ -108,7 +106,6 @@ const RiskGauge = ({ score, cyberMode }) => {
 
 function App() {
 
-  
   // --- NEW: INDIAN LAW MODE STATE ---
   const [indianLawMode, setIndianLawMode] = useState(false);
   // --- 1. STATE MANAGEMENT ---
@@ -178,7 +175,6 @@ function App() {
         const validModels = data.models?.filter(m => 
           m.supportedGenerationMethods.includes("generateContent")
         );
-        
         setAvailableModels(validModels || []);
       } catch (err) {
         console.error("Model Check Failed:", err);
@@ -236,6 +232,7 @@ function App() {
       setAnalysis(""); // Clears old analysis when new files are chosen
     }
   };
+
   // --- 7. HANDLER: RESET THE DASHBOARD ---
   // Completely wipes all files, previews, and analysis to start fresh.
   const handleClear = () => {
@@ -272,7 +269,6 @@ function App() {
     setSuggestion(""); // Clears the box after sending
     alert("Opening your email client to send feedback!");
   };
-  
 
   // --- 11. HELPER: FILE PREPARATION ---
   // Converts standard browser files into the base64 format Gemini requires.
@@ -292,15 +288,14 @@ function App() {
       reader.readAsDataURL(file);
     });
   };
-
   // --- 12. CORE LOGIC: THE AI SCANNER ---
   // The primary function that sends data to Gemini and retrieves the report.
   const analyzeContract = async () => {
-   // 1. VALIDATION: Check if user provided EITHER a file OR text
-      if (files.length === 0 && !manualText) {
-        alert("⚠️ SYSTEM ALERT: Please upload a file OR paste some text to begin!");
-        return;
-      }
+    // 1. VALIDATION: Check if user provided EITHER a file OR text
+    if (files.length === 0 && !manualText) {
+      alert("⚠️ SYSTEM ALERT: Please upload a file OR paste some text to begin!");
+      return;
+    }
 
     setLoading(true);
     // Initial status update for the user
@@ -317,7 +312,6 @@ function App() {
       
       const model = genAI.getGenerativeModel({ model: modelName });
 
-      // Convert all uploaded files simultaneously
       // 2. PREPARE DATA: Convert files
       const fileParts = await Promise.all(files.map(fileToGenerativePart));
 
@@ -351,7 +345,7 @@ function App() {
     setLoading(false);
   };
 
- // --- FIX: THEME-AWARE FORMATTER ---
+  // --- 13. THEME-AWARE FORMATTER ---
   const formatAnalysis = (text) => {
     if (!text) return null;
     
@@ -372,7 +366,6 @@ function App() {
           </p>
         );
       }
-      
       // 2. Normal Text - NO FORCED COLOR (Inherits from Parent)
       return (
         <p key={index} style={{ 
@@ -389,346 +382,384 @@ function App() {
   // --- 14. THE MAIN VISUAL COMPONENT ---
   return (
     <Router>
-      
-    <div className="App" style={{ 
-      backgroundColor: cyberMode ? themes.cyber.bg : themes.pro.bg, 
-      color: cyberMode ? themes.cyber.text : themes.pro.text,
-      minHeight: "100vh",
-      transition: "all 0.5s ease", // Smooth fade between modes
-      padding: "20px"
-      
-    }}><ScrollToTop />
-{/* --- NUCLEAR RESPONSIVE FIX (Forces Padding Everywhere) --- */}
-      <style>{`
-        /* 1. GLOBAL RESET: Force everything to stay inside the box */
-        * { box-sizing: border-box !important; }
-        
-        body, html, #root {
-          width: 100% !important;
-          max-width: 100vw !important;
-          overflow-x: hidden !important; /* Kills the side-scroll */
-          margin: 0 !important;
-        }
-
-        /* 2. THE APP CONTAINER: The "Safe Zone" */
-        .App {
-          width: 100% !important;
-          padding: 20px !important; /* THIS IS THE GAP YOU WANT */
-          display: flex;
-          flex-direction: column;
-          align-items: center; /* Centers everything */
-        }
-
-        /* 3. MOBILE SPECIFIC (Phones) */
-        @media (max-width: 767px) {
-          .App { padding: 15px !important; } /* Safe gap on small phones */
+      <div className="App" style={{ 
+        backgroundColor: cyberMode ? themes.cyber.bg : themes.pro.bg, 
+        color: cyberMode ? themes.cyber.text : themes.pro.text,
+        minHeight: "100vh",
+        transition: "all 0.5s ease", 
+        padding: "20px"
+      }}>
+        <ScrollToTop />
+        {/* --- NUCLEAR RESPONSIVE FIX (Forces Padding Everywhere) --- */}
+        <style>{`
+          /* 1. GLOBAL RESET: Force everything to stay inside the box */
+          * { box-sizing: border-box !important; }
           
-          /* Force the header to wrap if it's too long */
-          h1, h2, h3 { 
+          body, html, #root {
             width: 100% !important;
-            word-wrap: break-word !important;
-            text-align: center !important; 
+            max-width: 100vw !important;
+            overflow-x: hidden !important; /* Kills the side-scroll */
+            margin: 0 !important;
           }
 
-          /* Force the result box to fit */
-          .result-box {
+          /* 2. THE APP CONTAINER: The "Safe Zone" */
+          .App {
             width: 100% !important;
-            margin: 10px 0 !important;
-            padding: 15px !important;
+            padding: 20px !important; 
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centers everything */
           }
 
-          /* Stack the buttons */
-          button {
-            width: 100% !important;
-            margin: 8px 0 !important;
-          }
-          /* Keep Cyber Toggle small */
-          button[style*="fixed"] { width: auto !important; margin: 0 !important; }
-        }
-      `}</style>
-      {/* --- NAVIGATION MENU --- */}
-<nav style={{ 
-  padding: '20px', 
-  textAlign: 'center', 
-  borderBottom: '1px solid #333', 
-  marginBottom: '20px',
-  position: 'sticky',   // This keeps it at the top
-  top: '0',            // Distance from the top
-  zIndex: '1000',      // Ensures it stays above other elements
-  backgroundColor: cyberMode ? themes.cyber.bg : themes.pro.bg // Matches your theme
-}}>
-  <Link to="/" style={{ color: '#4da6ff', margin: '0 15px', textDecoration: 'none', fontWeight: 'bold' }}>Scanner (Home)</Link>
-  <Link to="/how-to-use" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>How to Use</Link>
-  <Link to="/about" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>About</Link>
-  <Link to="/contact" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>Contact</Link>
-  <Link to="/terms" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>Terms</Link>
-</nav>
-<Routes>
-  <Route path="/how-to-use" element={<HowToUse />} />
-  <Route path="/about" element={<About />} />
-  <Route path="/contact" element={<Contact />} />
-  <Route path="/terms" element={<Terms />} />
-  <Route path="/" element={
-    <>
-    {/* ---  CYBER-TOGGLE BUTTON --- */}
-      <button 
-        onClick={() => setCyberMode(!cyberMode)}
-        style={{
-          position: "fixed", top: "20px", right: "20px",
-          backgroundColor: cyberMode ? themes.cyber.accent : "#333",
-          color: "#fff", border: "none", borderRadius: "5px",
-          padding: "10px 15px", cursor: "pointer", zIndex: 1000,
-          boxShadow: cyberMode ? themes.cyber.glow : "none",
-          fontWeight: "bold", transition: "0.3s",
-          border: cyberMode ? `1px solid ${themes.cyber.secondary}` : "none"
-        }}
-      >
-        {cyberMode ? "🚀 PRO MODE" : "🌃 CYBER MODE"}
-      </button>
-      {/* --- GATEKEEPER MODAL: Safety First --- */}
-      {!hasAgreed && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
-          backgroundColor: "rgba(0,0,0,0.95)", display: "flex", alignItems: "center",
-          justifyContent: "center", zIndex: 10000, padding: "20px"
-        }}>
-          <div style={{
-            backgroundColor: "#1a1a1a", padding: "40px", borderRadius: "20px",
-            maxWidth: "600px", border: "2px solid #ffcc00", textAlign: "center",
-            boxShadow: "0 0 30px rgba(255, 204, 0, 0.2)"
-          }}>
-            <h2 style={{color: "#ffcc00", marginBottom: "20px"}}>⚖️ LEGAL-LENS PRO: USER AGREEMENT</h2>
+          /* 3. MOBILE SPECIFIC (Phones) */
+          @media (max-width: 767px) {
+            .App { padding: 15px !important; } /* Safe gap on small phones */
             
-            <div style={{textAlign: "left", color: "#ddd", fontSize: "14px", lineHeight: "1.6", marginBottom: "30px"}}>
-              <p>Welcome to <strong>Legal-Lens Pro</strong>. Before you proceed, please understand:</p>
-              <ul style={{marginTop: "10px"}}>
-                <li>This is a student project created by <strong>Pragadishwar</strong> for educational purposes only.</li>
-                <li><strong>NOT LEGAL ADVICE:</strong> AI analysis can be wrong. Never rely on this for real legal decisions.</li>
-                <li><strong>USER RESPONSIBILITY:</strong> All risks, outcomes, and liabilities from using this tool are strictly your own.</li>
-                <li><strong>PRIVACY:</strong> Do not upload documents containing sensitive personal data.</li>
-              </ul>
-            </div>
+            /* Force the header to wrap if it's too long */
+            h1, h2, h3 { 
+              width: 100% !important;
+              word-wrap: break-word !important;
+              text-align: center !important; 
+            }
 
-            <div style={{display: "flex", gap: "15px", justifyContent: "center"}}>
-              <button 
-                onClick={() => setHasAgreed(true)}
-                style={{
-                  padding: "15px 30px", backgroundColor: "#ffcc00", color: "#000",
-                  border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", fontSize: "16px"
-                }}
-              >
-                I AGREE & CONTINUE
-              </button>
-              <button 
-                onClick={() => window.location.href = "https://google.com"}
-                style={{
-                  padding: "15px 30px", backgroundColor: "transparent", color: "#ff4444",
-                  border: "1px solid #ff4444", borderRadius: "8px", cursor: "pointer"
-                }}
-              >
-                I DISAGREE (EXIT)
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            /* Force the result box to fit */
+            .result-box {
+              width: 100% !important;
+              margin: 10px 0 !important;
+              padding: 15px !important;
+            }
 
-      {/* --- HEADER SECTION --- */}
-      <h1>
-        ⚡ Legal-Lens Pro ⚡ 
-        <span 
-  className={apiStatus === "online" ? "live-pulse" : ""}
-  style={{ 
-    fontSize: '12px', 
-    verticalAlign: 'middle', 
-    marginLeft: '10px',
-    transition: "color 0.3s ease",
-    color: apiStatus === "online" ? "#28a745" : apiStatus === "offline" ? "#dc3545" : "#ffc107"
-  }}
->
-  ● {apiStatus.toUpperCase()}
-</span>
-      </h1>
-      <p style={{ color: "#aaa", marginBottom: "30px" }}>AI-Powered Contract Analysis & Risk Detection</p>
-      
-      {/* --- SYSTEM ERROR DISPLAY --- */}
-      {modelError && (
-        <div style={{ 
-          backgroundColor: "#2d0a0a", padding: "10px", margin: "10px auto", 
-          borderRadius: "5px", maxWidth: "600px", fontSize: "12px", 
-          border: "1px solid #ff4444", color: "#ff8888" 
+            /* Stack the buttons */
+            button {
+              width: 100% !important;
+              margin: 8px 0 !important;
+            }
+            /* Keep Cyber Toggle small */
+            button[style*="fixed"] { width: auto !important; margin: 0 !important; }
+          }
+        `}</style>
+
+        {/* --- NAVIGATION MENU --- */}
+        <nav style={{ 
+          padding: '20px', 
+          textAlign: 'center', 
+          borderBottom: '1px solid #333', 
+          marginBottom: '20px',
+          position: 'sticky', 
+          top: '0', 
+          zIndex: '1000', 
+          backgroundColor: cyberMode ? themes.cyber.bg : themes.pro.bg 
         }}>
-          <strong>🚨 SYSTEM ERROR:</strong> {modelError}
-        </div>
-      )}
+          <Link to="/" style={{ color: '#4da6ff', margin: '0 15px', textDecoration: 'none', fontWeight: 'bold' }}>Scanner (Home)</Link>
+          <Link to="/how-to-use" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>How to Use</Link>
+          <Link to="/about" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>About</Link>
+          <Link to="/contact" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>Contact</Link>
+          <Link to="/terms" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>Terms</Link>
+        </nav>
+        <Routes>
+          <Route path="/how-to-use" element={
+            <>
+              <Helmet>
+                <title>How to Use Legal-Lens Pro - AI Legal Guide</title>
+                <meta name="description" content="Learn how to use Legal-Lens Pro to analyze contracts and identify legal risks using AI." />
+              </Helmet>
+              <HowToUse />
+            </>
+          } />
+          <Route path="/about" element={
+            <>
+              <Helmet>
+                <title>About Legal-Lens Pro - AI Legal Innovation</title>
+                <meta name="description" content="Discover the mission behind Legal-Lens Pro, an AI project by Pragadishwar." />
+              </Helmet>
+              <About />
+            </>
+          } />
+          <Route path="/contact" element={
+            <>
+              <Helmet>
+                <title>Contact Legal-Lens Pro - Support & Feedback</title>
+                <meta name="description" content="Get in touch with the creator of Legal-Lens Pro for feedback or inquiries." />
+              </Helmet>
+              <About />
+            </>
+          } />
+          <Route path="/terms" element={
+            <>
+              <Helmet>
+                <title>Terms of Service - Legal-Lens Pro</title>
+                <meta name="description" content="Read the terms and conditions for using the Legal-Lens Pro AI tool." />
+              </Helmet>
+              <Terms />
+            </>
+          } />
+          <Route path="/" element={
+            <>
+              <Helmet>
+                <title>Legal-Lens Pro - AI Legal Companion India</title>
+                <meta name="description" content="Legal-Lens Pro combines Indian Contract Act 1872 with 50+ language translations. Scan legal documents for risks now." />
+              </Helmet>
+              
+              {/* ---  CYBER-TOGGLE BUTTON --- */}
+              <button 
+                onClick={() => setCyberMode(!cyberMode)}
+                style={{
+                  position: "fixed", top: "20px", right: "20px",
+                  backgroundColor: cyberMode ? themes.cyber.accent : "#333",
+                  color: "#fff", border: "none", borderRadius: "5px",
+                  padding: "10px 15px", cursor: "pointer", zIndex: 1000,
+                  boxShadow: cyberMode ? themes.cyber.glow : "none",
+                  fontWeight: "bold", transition: "0.3s",
+                  border: cyberMode ? `1px solid ${themes.cyber.secondary}` : "none"
+                }}
+              >
+                {cyberMode ? "🚀 PRO MODE" : "🌃 CYBER MODE"}
+              </button>
 
-      {/* --- UPLOAD SECTION --- */}
-      <div className="upload-box">
-        <input 
-          type="file" multiple accept="image/*,application/pdf" 
-          onChange={handleFileChange} 
-        />
-        <p style={{marginTop: "10px", fontSize: "12px", color: "#888"}}>
-          (Supports: JPG, PNG, PDF)
-        </p>
-      </div>
+              {/* --- GATEKEEPER MODAL --- */}
+              {!hasAgreed && (
+                <div style={{
+                  position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+                  backgroundColor: "rgba(0,0,0,0.95)", display: "flex", alignItems: "center",
+                  justifyContent: "center", zIndex: 10000, padding: "20px"
+                }}>
+                  <div style={{
+                    backgroundColor: "#1a1a1a", padding: "40px", borderRadius: "20px",
+                    maxWidth: "600px", border: "2px solid #ffcc00", textAlign: "center",
+                    boxShadow: "0 0 30px rgba(255, 204, 0, 0.2)"
+                  }}>
+                    <h2 style={{color: "#ffcc00", marginBottom: "20px"}}>⚖️ LEGAL-LENS PRO: USER AGREEMENT</h2>
+                    
+                    <div style={{textAlign: "left", color: "#ddd", fontSize: "14px", lineHeight: "1.6", marginBottom: "30px"}}>
+                      <p>Welcome to <strong>Legal-Lens Pro</strong>. Before you proceed, please understand:</p>
+                      <ul style={{marginTop: "10px"}}>
+                        <li>This is a student project created by <strong>Pragadishwar</strong> for educational purposes only.</li>
+                        <li><strong>NOT LEGAL ADVICE:</strong> AI analysis can be wrong. Never rely on this for real legal decisions.</li>
+                        <li><strong>USER RESPONSIBILITY:</strong> All risks, outcomes, and liabilities from using this tool are strictly your own.</li>
+                        <li><strong>PRIVACY:</strong> Do not upload documents containing sensitive personal data.</li>
+                      </ul>
+                    </div>
 
-      {/* --- PREVIEW GALLERY --- */}
-      <div className="preview-container">
-        {previews.map((file, index) => (
-          <div key={index} className="preview-item">
-            {file.type.includes("image") ? (
-              <img src={file.url} alt="preview" style={{width: "80px", height: "80px", objectFit: "cover", borderRadius: "4px"}} />
-            ) : (
-              <div style={{
-                width: "80px", height: "80px", display: "flex", alignItems: "center", 
-                justifyContent: "center", flexDirection: "column", color: "#e0e0e0"
-              }}>
-                📄 <span style={{fontSize: "9px", marginTop: "5px"}}>{file.name.substring(0, 10)}...</span>
+                    <div style={{display: "flex", gap: "15px", justifyContent: "center"}}>
+                      <button 
+                        onClick={() => setHasAgreed(true)}
+                        style={{
+                          padding: "15px 30px", backgroundColor: "#ffcc00", color: "#000",
+                          border: "none", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", fontSize: "16px"
+                        }}
+                      >
+                        I AGREE & CONTINUE
+                      </button>
+                      <button 
+                        onClick={() => window.location.href = "https://google.com"}
+                        style={{
+                          padding: "15px 30px", backgroundColor: "transparent", color: "#ff4444",
+                          border: "1px solid #ff4444", borderRadius: "8px", cursor: "pointer"
+                        }}
+                      >
+                        I DISAGREE (EXIT)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* --- HEADER SECTION --- */}
+              <h1>
+                ⚡ Legal-Lens Pro ⚡ 
+                <span 
+                  className={apiStatus === "online" ? "live-pulse" : ""}
+                  style={{ 
+                    fontSize: '12px', 
+                    verticalAlign: 'middle', 
+                    marginLeft: '10px',
+                    transition: "color 0.3s ease",
+                    color: apiStatus === "online" ? "#28a745" : apiStatus === "offline" ? "#dc3545" : "#ffc107"
+                  }}
+                >
+                  ● {apiStatus.toUpperCase()}
+                </span>
+              </h1>
+              <p style={{ color: "#aaa", marginBottom: "30px" }}>AI-Powered Contract Analysis & Risk Detection</p>
+              
+              {/* --- SYSTEM ERROR DISPLAY --- */}
+              {modelError && (
+                <div style={{ 
+                  backgroundColor: "#2d0a0a", padding: "10px", margin: "10px auto", 
+                  borderRadius: "5px", maxWidth: "600px", fontSize: "12px", 
+                  border: "1px solid #ff4444", color: "#ff8888" 
+                }}>
+                  <strong>🚨 SYSTEM ERROR:</strong> {modelError}
+                </div>
+              )}
+
+              {/* --- UPLOAD SECTION --- */}
+              <div className="upload-box">
+                <input 
+                  type="file" multiple accept="image/*,application/pdf" 
+                  onChange={handleFileChange} 
+                />
+                <p style={{marginTop: "10px", fontSize: "12px", color: "#888"}}>
+                  (Supports: JPG, PNG, PDF)
+                </p>
               </div>
-            )}
-          </div>
-        ))}
-      </div>
 
-      {/* --- ACTION BUTTONS --- */}
-    {/* --- MANUAL TEXT INPUT AREA --- */}
-      <textarea
-        placeholder="Or paste your contract text, email, or WhatsApp message here..."
-        value={manualText}
-        onChange={(e) => setManualText(e.target.value)}
-        style={{
-          width: "100%", height: "120px", marginTop: "20px", padding: "15px",
-          backgroundColor: "#1a1a1a", color: "#fff", border: "1px dashed #555", borderRadius: "10px",
-          fontSize: "14px", fontFamily: "monospace"
-        }}
-      />
-      <div style={{ display: "flex", justifyContent: "center", gap: "15px", margin: "20px 0" }}>
-       {/* --- LANGUAGE SELECTOR --- */}
-       {/* PASTE THIS NEW SEARCH BAR HERE */}
-<div style={{ display: "inline-block", marginRight: "10px" }}>
-  <input 
-    list="language-options" 
-    placeholder="Type language..." 
-    value={language} 
-    onChange={(e) => setLanguage(e.target.value)}
-    style={{
-      padding: "10px", borderRadius: "5px", border: "1px solid #444",
-      backgroundColor: "#222", color: "#fff", width: "150px",
-      cursor: "text", fontSize: "14px"
-    }}
-  />
-  <datalist id="language-options">
-    {filteredLanguages.map((lang) => (
-      <option key={lang} value={lang} />
-    ))}
-  </datalist>
-</div>
-{/* --- INDIAN LAW TOGGLE --- */}
-        <label style={{ display: "flex", alignItems: "center", cursor: "pointer", color: "#fff", marginRight: "10px" }}>
-          <input 
-            type="checkbox" 
-            checked={indianLawMode} 
-            onChange={(e) => setIndianLawMode(e.target.checked)}
-            style={{ marginRight: "8px", transform: "scale(1.2)", cursor: "pointer" }}
-          />
-           Indian Law Mode
-        </label>
-        <button className="btn-scan" onClick={analyzeContract} disabled={loading}>
-          {loading ? `⏳ ${loadingMessage}` : `🔍 SCAN FILES`}
-        </button>
+              {/* --- PREVIEW GALLERY --- */}
+              <div className="preview-container">
+                {previews.map((file, index) => (
+                  <div key={index} className="preview-item">
+                    {file.type.includes("image") ? (
+                      <img src={file.url} alt="preview" style={{width: "80px", height: "80px", objectFit: "cover", borderRadius: "4px"}} />
+                    ) : (
+                      <div style={{
+                        width: "80px", height: "80px", display: "flex", alignItems: "center", 
+                        justifyContent: "center", flexDirection: "column", color: "#e0e0e0"
+                      }}>
+                        📄 <span style={{fontSize: "9px", marginTop: "5px"}}>{file.name.substring(0, 10)}...</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
 
-        <button className="btn-clear" onClick={handleClear}>
-          🗑️ RESET
-        </button>
-      </div>
+              {/* --- MANUAL TEXT INPUT AREA --- */}
+              <textarea
+                placeholder="Or paste your contract text, email, or WhatsApp message here..."
+                value={manualText}
+                onChange={(e) => setManualText(e.target.value)}
+                style={{
+                  width: "100%", height: "120px", marginTop: "20px", padding: "15px",
+                  backgroundColor: "#1a1a1a", color: "#fff", border: "1px dashed #555", borderRadius: "10px",
+                  fontSize: "14px", fontFamily: "monospace"
+                }}
+              />
+              <div style={{ display: "flex", justifyContent: "center", gap: "15px", margin: "20px 0" }}>
+                {/* --- LANGUAGE SELECTOR --- */}
+                <div style={{ display: "inline-block", marginRight: "10px" }}>
+                  <input 
+                    list="language-options" 
+                    placeholder="Type language..." 
+                    value={language} 
+                    onChange={(e) => setLanguage(e.target.value)}
+                    style={{
+                      padding: "10px", borderRadius: "5px", border: "1px solid #444",
+                      backgroundColor: "#222", color: "#fff", width: "150px",
+                      cursor: "text", fontSize: "14px"
+                    }}
+                  />
+                  <datalist id="language-options">
+                    {filteredLanguages.map((lang) => (
+                      <option key={lang} value={lang} />
+                    ))}
+                  </datalist>
+                </div>
 
-      {/* --- RESULTS SECTION: The Colorful Diagnostic --- */}
-      {analysis && !loading && (
-        <div 
-        className="result-box" 
-        ref={resultsRef}
-        style={{
-          backgroundColor: cyberMode ? "rgba(0, 0, 0, 0.8)" : "#fff",
-          border: cyberMode ? `1px solid ${themes.cyber.secondary}` : "none",
-          boxShadow: cyberMode ? "0 0 25px rgba(0, 255, 255, 0.2)" : "0 4px 15px rgba(0,0,0,0.1)",
-          color: cyberMode ? "#fff" : "#333",
-          borderRadius: "15px",
-          padding: "20px",
-          marginTop: "20px",
-          transition: "0.5s"
-        }}
-      >
-          {/* --- UPDATE: PASS CYBER MODE TO GAUGE --- */}
-     <RiskGauge 
-  score={parseInt(analysis.match(/Risk Score[:*]*\s*(\d+)/i)?.[1] || 0)} 
-  cyberMode={cyberMode} 
-/>
-          <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
-      <div style={{ textAlign: "left", color: cyberMode ? "#fff" : "#000000" }}>
-  {analysis ? (
-   (parseInt(analysis.match(/Risk Score[:*]*\s*(\d+)/i)?.[1] || 0) > 1)
-   
-      ? formatAnalysis(analysis) 
-      : <div style={{ color: "#28a745", fontWeight: "bold", textAlign: "center", padding: "20px" }}>
-          ✅ SYSTEM SCAN COMPLETE: No risks detected.
-        </div>
-  ) : null}
-</div>
-          
-          <div style={{marginTop: "25px", textAlign: "right", borderTop: "1px solid #444", paddingTop: "15px"}}>
-             <button 
-               className="btn-download" onClick={handleCopy} 
-               style={{marginRight: "10px", backgroundColor: "#333"}}
-             >
-               📋 COPY TEXT
-             </button>
-             <button className="btn-download" onClick={handleDownload}>
-               💾 SAVE REPORT
-             </button>
-          </div>
-        </div>
-      )}
+                {/* --- INDIAN LAW TOGGLE --- */}
+                <label style={{ display: "flex", alignItems: "center", cursor: "pointer", color: "#fff", marginRight: "10px" }}>
+                  <input 
+                    type="checkbox" 
+                    checked={indianLawMode} 
+                    onChange={(e) => setIndianLawMode(e.target.checked)}
+                    style={{ marginRight: "8px", transform: "scale(1.2)", cursor: "pointer" }}
+                  />
+                  Indian Law Mode
+                </label>
 
-      {/* --- SUGGESTION BOX: Developer Feedback --- */}
-      <div style={{
-        marginTop: "60px", padding: "20px", backgroundColor: "#111", 
-        borderRadius: "10px", border: "1px solid #333", maxWidth: "600px", 
-        margin: "60px auto", textAlign: "center"
-      }}>
-        <h4 style={{color: "#007bff", marginBottom: "10px"}}>💡 Have a suggestion?</h4>
-        <textarea 
-          placeholder="Help me improve Legal-Lens! Type your feedback here..."
-          value={suggestion} onChange={(e) => setSuggestion(e.target.value)}
-          style={{
-            width: "100%", height: "80px", backgroundColor: "#222", color: "#fff",
-            border: "1px solid #444", borderRadius: "5px", padding: "10px", 
-            fontSize: "14px", resize: "none", marginBottom: "10px", outline: "none"
-          }}
-        />
-        <button onClick={handleSendSuggestion} className="btn-send-suggestion">
-          SEND FEEDBACK
-        </button>
+                <button className="btn-scan" onClick={analyzeContract} disabled={loading}>
+                  {loading ? `⏳ ${loadingMessage}` : `🔍 SCAN FILES`}
+                </button>
+
+                <button className="btn-clear" onClick={handleClear}>
+                  🗑️ RESET
+                </button>
+              </div>
+
+              {/* --- RESULTS SECTION: The Colorful Diagnostic --- */}
+              {analysis && !loading && (
+                <div 
+                  className="result-box" 
+                  ref={resultsRef}
+                  style={{
+                    backgroundColor: cyberMode ? "rgba(0, 0, 0, 0.8)" : "#fff",
+                    border: cyberMode ? `1px solid ${themes.cyber.secondary}` : "none",
+                    boxShadow: cyberMode ? "0 0 25px rgba(0, 255, 255, 0.2)" : "0 4px 15px rgba(0,0,0,0.1)",
+                    color: cyberMode ? "#fff" : "#333",
+                    borderRadius: "15px",
+                    padding: "20px",
+                    marginTop: "20px",
+                    transition: "0.5s"
+                  }}
+                >
+                  {/* --- RISK GAUGE --- */}
+                  <RiskGauge 
+                    score={parseInt(analysis.match(/Risk Score[:*]*\s*(\d+)/i)?.[1] || 0)} 
+                    cyberMode={cyberMode} 
+                  />
+                  
+                  <h3 className="result-title">📋 DIAGNOSTIC REPORT:</h3>
+                  <div style={{ textAlign: "left", color: cyberMode ? "#fff" : "#000000" }}>
+                    {analysis ? (
+                      (parseInt(analysis.match(/Risk Score[:*]*\s*(\d+)/i)?.[1] || 0) > 1)
+                        ? formatAnalysis(analysis) 
+                        : <div style={{ color: "#28a745", fontWeight: "bold", textAlign: "center", padding: "20px" }}>
+                            ✅ SYSTEM SCAN COMPLETE: No risks detected.
+                          </div>
+                    ) : null}
+                  </div>
+                  <div style={{marginTop: "25px", textAlign: "right", borderTop: "1px solid #444", paddingTop: "15px"}}>
+                    <button 
+                      className="btn-download" onClick={handleCopy} 
+                      style={{marginRight: "10px", backgroundColor: "#333"}}
+                    >
+                      📋 COPY TEXT
+                    </button>
+                    <button className="btn-download" onClick={handleDownload}>
+                      💾 SAVE REPORT
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* --- SUGGESTION BOX: Developer Feedback --- */}
+              <div style={{
+                marginTop: "60px", padding: "20px", backgroundColor: "#111", 
+                borderRadius: "10px", border: "1px solid #333", maxWidth: "600px", 
+                margin: "60px auto", textAlign: "center"
+              }}>
+                <h4 style={{color: "#007bff", marginBottom: "10px"}}>💡 Have a suggestion?</h4>
+                <textarea 
+                  placeholder="Help me improve Legal-Lens! Type your feedback here..."
+                  value={suggestion} onChange={(e) => setSuggestion(e.target.value)}
+                  style={{
+                    width: "100%", height: "80px", backgroundColor: "#222", color: "#fff",
+                    border: "1px solid #444", borderRadius: "5px", padding: "10px", 
+                    fontSize: "14px", resize: "none", marginBottom: "10px", outline: "none"
+                  }}
+                />
+                <button onClick={handleSendSuggestion} className="btn-send-suggestion">
+                  SEND FEEDBACK
+                </button>
+              </div>
+
+              {/* --- LOCAL HELP COMPONENT --- */}
+              <div className="section-container" style={{ maxWidth: '600px', margin: '20px auto' }}>
+                <LocalHelp cyberMode={cyberMode} />
+              </div>
+            </>
+          } />
+        </Routes>
+
+        {/* --- FOOTER: Professional Branding --- */}
+        <footer style={{ 
+          marginTop: "80px", padding: "30px", borderTop: "1px solid #333", 
+          fontSize: "12px", color: "#666", textAlign: "center", lineHeight: "1.8"
+        }}>
+          <p>⚠️ <strong>LEGAL DISCLAIMER:</strong> This AI tool provides general information and is not a substitute for professional legal advice.</p>
+          <p style={{ color: "#007bff", fontWeight: "bold" }}>© 2026 Pragadishwar - Built with Google Gemini API</p>
+        </footer>
       </div>
-{/* --- ADD THE NEW COMPONENT HERE --- */}
-      <div className="section-container" style={{ maxWidth: '600px', margin: '20px auto' }}>
-        <LocalHelp cyberMode={cyberMode} />
-      </div>
-      </>
-  } />
-</Routes>
-      {/* --- FOOTER: Professional Branding --- */}
-      <footer style={{ 
-        marginTop: "80px", padding: "30px", borderTop: "1px solid #333", 
-        fontSize: "12px", color: "#666", textAlign: "center", lineHeight: "1.8"
-      }}>
-        <p>⚠️ <strong>LEGAL DISCLAIMER:</strong> This AI tool provides general information and is not a substitute for professional legal advice.</p>
-        <p style={{ color: "#007bff", fontWeight: "bold" }}>© 2026 Pragadishwar - Built with Google Gemini API</p>
-      </footer>
-    </div>
-  </Router>
+    </Router>
   );
-
-
 }
+
 export default App;
