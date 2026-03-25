@@ -58,6 +58,16 @@ function About() {
           unfair clauses, hidden liabilities, and specific violations of Indian law, 
           generating a report in plain English or your preferred regional tongue.
         </p>
+        {/* Add this right before the closing </section> of your "How It Works" section */}
+<div style={{ textAlign: "center", marginTop: "40px" }}>
+  <button 
+    onClick={() => window.location.href = "/"} 
+    style={styles.ctaButton}
+  >
+    Launch Scanner Now
+  </button>
+</div>
+
       </section>
 
       {/* --- THE VISION SECTION --- */}
@@ -83,8 +93,9 @@ function About() {
         </p>
       </section>
 
+
       <div style={styles.footerNote}>
-        🚀 Proudly part of the <strong>Study-Lens Pro</strong> ecosystem.
+        🚀 Proudly part of the <strong>Lens Intelligence Suite</strong> (Study | Legal | Research[coming soon] | Data[coming soon]).
       </div>
     </div>
   );
@@ -164,7 +175,20 @@ const styles = {
     borderTop: "1px solid #222",
     fontSize: "0.9rem",
     color: "#666"
-  }
+  },
+  // Add this to your styles object at the bottom of the file
+ctaButton: {
+  padding: "15px 40px",
+  backgroundColor: "#4da6ff",
+  color: "#000",
+  border: "none",
+  borderRadius: "30px",
+  fontSize: "1.2rem",
+  fontWeight: "bold",
+  cursor: "pointer",
+  transition: "0.3s",
+  boxShadow: "0 4px 15px rgba(77, 166, 255, 0.3)"
+}
 };
 
 export default About;
