@@ -60,12 +60,10 @@ const FAQ = () => {
   ];
   return (
     <>
-      {/* 1. THE SEO ENGINE (HELMET) */}
       <Helmet>
         <title>Legal-Lens Pro | FAQ - Indian Contract Law & AI Risk Analysis</title>
         <meta name="description" content="Deep dive into Section 29, Section 10, and Stamp Duty. Learn how our AI-Lens scans for legal risks in Indian contracts." />
         
-        {/* FAQ Schema - This helps you get those Google Dropdown results! */}
         <script type="application/ld+json">
         {`
           {
@@ -79,14 +77,6 @@ const FAQ = () => {
                   "@type": "Answer",
                   "text": "Under Section 10 of the Indian Contract Act, it can be valid, but it may be inadmissible as evidence in court without proper stamp duty."
                 }
-              },
-              {
-                "@type": "Question",
-                "name": "What is Section 29 of the Indian Contract Act?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Section 29 states that agreements with uncertain meanings are void. Our AI identifies these vagueness risks instantly."
-                }
               }
             ]
           }
@@ -94,7 +84,6 @@ const FAQ = () => {
         </script>
       </Helmet>
 
-      {/* 2. THE VISIBLE UI (ACCORDION) */}
       <div style={styles.container}>
         <h1 style={styles.heading}>Knowledge Base & FAQ</h1>
         <p style={styles.subheading}>Deep dive into Indian Law and the Legal-Lens Pro logic.</p>
@@ -106,7 +95,7 @@ const FAQ = () => {
               const globalIndex = `${sIndex}-${qIndex}`;
               const isOpen = activeIndex === globalIndex;
               return (
-                <div key={qIndex} style={styles.faqItem}>
+                <div key={globalIndex} style={styles.faqItem}>
                   <div 
                     style={isOpen ? {...styles.questionRow, ...styles.activeQuestion} : styles.questionRow} 
                     onClick={() => toggleAccordion(globalIndex)}
@@ -123,7 +112,7 @@ const FAQ = () => {
       </div>
     </>
   );
-}; // Closing the FAQ function
+};
 const styles = {
   container: { 
     padding: "100px 20px", 
