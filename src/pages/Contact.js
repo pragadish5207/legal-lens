@@ -43,7 +43,7 @@ function Contact() {
         <div>
           <h3 style={{ margin: 0, color: "#fff" }}>Pragadishwar </h3>
           <p style={{ margin: 0, fontSize: "0.9rem", color: "#888" }}>
-            B.Com Student | AI Developer | Jio Institute Alumnus
+            B.Com Student | AI Developer | Jio & Outskill Certified
           </p>
         </div>
       </div>

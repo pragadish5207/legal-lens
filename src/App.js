@@ -328,21 +328,37 @@ function App() {
       // 2. PREPARE DATA: Convert files
       const fileParts = await Promise.all(files.map(fileToGenerativePart));
 
-      // 3. SMART PROMPT: Handles Files + Text + Indian Law
-      const prompt = `You are an expert Lawyer${indianLawMode ? " specializing in INDIAN LAW (Indian Contract Act, 1872)" : ""}. 
-      Analyze the following legal content (${files.length} files and/or pasted text).
-      
-      CRITICAL INSTRUCTION: Output the entire report in ${language} language.
-      
-      ${indianLawMode ? "IMPORTANT: Verify clauses against 'Indian Contract Act, 1872'. SCAM ALERT: Check for 'Security Deposit' or 'Training Fees'. If found, label as '🚨 KNOWN SCAM PATTERN'." : ""}
+      // 3. SMART PROMPT: Chief Justice Statutory Audit Mode
+const prompt = `### ROLE
+You are a Senior High Court Auditor with 30 years of experience in the Indian Judicial System. You have ZERO tolerance for informal or vague documentation.
 
-      For the content provided:
-      1. Identify the Document Name (or "Pasted Text").
-      2. Find 'Red Flags'. Label as "⚠️ Red Flag:" (keep English).
-      3. Explain risk in ${language} in 1 sentence.
-      4. Give 'Risk Score' (0-10) labeled as "🔥 Risk Score:" (keep English).
-      
-      Format cleanly.`;
+### STATUTORY MANDATE (INDIAN LAW MODE: ${indianLawMode ? "ACTIVE" : "INACTIVE"})
+${indianLawMode ? `If Indian Law Mode is ACTIVE, you MUST:
+1. VETO any agreement that lacks "Certainty" under Section 29 of the Indian Contract Act, 1872.
+2. CITE specific sections (e.g., Section 10, Section 25, Section 2(d)) for every Red Flag.
+3. VERIFY "Consideration" (Quid Pro Quo) – if the reason for payment is missing, cite Section 25.
+4. AUDIT for Stamp Duty requirements under the Indian Stamp Act, 1899.` : ""}
+
+### AUDIT EXECUTION (${files.length} Source(s))
+Analyze the provided content with "Extreme Prejudice." 
+
+**Specific Use-Case Roast:** If the user inputs "i accept to pay him 500 rupees":
+- You MUST flag this as a **10/10 Fatal Risk**.
+- Reason: Violation of **Section 29 (Vagueness)** – "Him" is not a defined legal entity.
+- Reason: Violation of **Section 2(d) (Consideration)** – No service or product is defined for the 500 rupees.
+- Reason: Violation of **Section 10** – Lacks essential elements of a valid contract (Identity and Capacity).
+
+### REQUIRED OUTPUT FORMAT
+1. SOURCE: Identify document.
+2. STATUTORY RED FLAGS:
+   - [Section Number] - [Legal Title]: [One-sentence explanation in ${language}].
+3. SCAM SHIELD: Identify any "🚨 KNOWN SCAM PATTERNS".
+4. 🔥 RISK SCORE: (0-10).
+
+### STRICT RULES
+- NO introductory text. NO "I have analyzed your files."
+- If it's not a formal contract, give it a 10/10 Risk.
+- OUTPUT in ${language} except for English Labels and Section Titles.`
 
       // 4. EXECUTE: Send Prompt + Files + Text to Gemini
       const result = await model.generateContent([prompt, ...fileParts, manualText]);

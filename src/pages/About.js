@@ -75,10 +75,11 @@ function About() {
         <h2 style={styles.subheading}>Meet the Creator</h2>
         <p style={styles.paragraph}>
           Built by <strong>Pragadishwar</strong>, a B.Com student and AI innovator 
-          from Ahmedabad. By combining commerce knowledge with 
-          <strong> AI Classroom Foundation</strong> training from Jio Institute, 
-          this project serves as a real-world case study on how 
-          Generative AI can democratize access to justice in India.
+          from Ahmedabad. By combining commerce knowledge with professional training 
+          from the <strong>Jio Institute AI Classroom</strong> and a 
+          <strong> Generative AI Mastermind</strong> certification from Outskill, 
+          this project serves as a real-world case study on how cutting-edge AI 
+          can democratize access to justice in India.
         </p>
       </section>
 
