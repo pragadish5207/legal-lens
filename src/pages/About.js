@@ -94,8 +94,14 @@ function About() {
       </section>
 
 
-      <div style={styles.footerNote}>
-        🚀 Proudly part of the <strong>Lens Intelligence Suite</strong> (Study | Legal | Research[coming soon] | Data[coming soon]).
+      <div style={styles.ecosystemContainer}>
+        <p style={styles.ecosystemTitle}>🚀 Lens Intelligence Suite</p>
+        <div style={styles.badgeGrid}>
+          <span style={styles.activeBadge}>Study</span>
+          <span style={styles.activeBadge}>Legal</span>
+          <span style={styles.upcomingBadge}>Research (Soon)</span>
+          <span style={styles.upcomingBadge}>Data (Soon)</span>
+        </div>
       </div>
     </div>
   );
@@ -188,7 +194,47 @@ ctaButton: {
   cursor: "pointer",
   transition: "0.3s",
   boxShadow: "0 4px 15px rgba(77, 166, 255, 0.3)"
-}
+},
+ecosystemContainer: {
+    textAlign: "center",
+    marginTop: "60px",
+    padding: "30px 20px",
+    borderTop: "1px solid #222",
+    backgroundColor: "rgba(255, 255, 255, 0.01)",
+    borderRadius: "0 0 20px 20px"
+  },
+  ecosystemTitle: {
+    fontSize: "0.75rem",
+    color: "#666",
+    letterSpacing: "3px",
+    textTransform: "uppercase",
+    marginBottom: "20px",
+    fontWeight: "bold"
+  },
+  badgeGrid: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "12px",
+    flexWrap: "wrap"
+  },
+  activeBadge: {
+    padding: "6px 16px",
+    backgroundColor: "rgba(77, 166, 255, 0.1)",
+    color: "#4da6ff",
+    borderRadius: "20px",
+    fontSize: "0.8rem",
+    fontWeight: "bold",
+    border: "1px solid rgba(77, 166, 255, 0.3)",
+    transition: "0.3s"
+  },
+  upcomingBadge: {
+    padding: "6px 16px",
+    backgroundColor: "rgba(255, 255, 255, 0.03)",
+    color: "#444",
+    borderRadius: "20px",
+    fontSize: "0.8rem",
+    border: "1px solid #222"
+  }
 };
 
 export default About;
