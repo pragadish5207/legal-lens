@@ -1,3 +1,4 @@
+// Stable version restored
 import { Helmet } from 'react-helmet-async';
 import LocalHelp from './LocalHelp';
 import React, { useState, useRef, useEffect } from 'react';
