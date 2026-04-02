@@ -8,6 +8,7 @@ import FAQ from './pages/FAQ';
 import ScrollToTop from './ScrollToTop';
 // React Router imports
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Updates from './pages/Updates';
 
 // Importing your new pages
 import About from './pages/About';
@@ -507,9 +508,11 @@ Analyze the provided content with "Extreme Prejudice."
           <Link to="/faq" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>FAQ</Link>
           <Link to="/contact" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>Contact</Link>
           <Link to="/terms" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>Terms</Link>
+        <Link to="/updates" style={{ color: 'white', margin: '0 15px', textDecoration: 'none' }}>Updates</Link>
         </nav>
         <Routes>
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/updates" element={<Updates cyberMode={cyberMode} themes={themes} />} />
           <Route path="/how-to-use" element={
             <>
               <Helmet>
@@ -590,6 +593,8 @@ Analyze the provided content with "Extreme Prejudice."
                         <li><strong>NOT LEGAL ADVICE:</strong> AI analysis can be wrong. Never rely on this for real legal decisions.</li>
                         <li><strong>USER RESPONSIBILITY:</strong> All risks, outcomes, and liabilities from using this tool are strictly your own.</li>
                         <li><strong>PRIVACY:</strong> Do not upload documents containing sensitive personal data.</li>
+                        <li className="live-pulse" style={{ color: "#4facfe", fontWeight: "bold" }}>
+  💻 Best viewed in Desktop Mode for the full dashboard experience.</li>
                       </ul>
                     </div>
 
