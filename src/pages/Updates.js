@@ -4,10 +4,13 @@ import { PATCH_UPDATES } from '../patchData';
 
 const Updates = () => {
   const updateTheme = {
-    bg: "transparent", // Set to transparent to match your global background
-    accent: "#007bff", 
+    bg: "transparent",
     text: "#e0e0e0",
-    subtext: "#888"
+    subtext: "#888",
+    // Color Palette
+    future: "#a855f7", // Purple
+    current: "#007bff", // Blue
+    past: "#333"       // Grey
   };
 
   return (
@@ -25,48 +28,62 @@ const Updates = () => {
       </p>
 
       <div style={{ position: 'relative', borderLeft: `2px solid #222`, paddingLeft: '40px', marginLeft: '20px' }}>
-        {PATCH_UPDATES.map((patch, index) => (
-          <div key={index} style={{ marginBottom: '80px', position: 'relative' }}>
-            
-            {/* The Timeline Dot */}
-            <div style={{
-              position: 'absolute', left: '-51px', top: '5px',
-              width: '20px', height: '20px', borderRadius: '50%',
-              backgroundColor: '#000', 
-              border: `4px solid ${patch.status === 'LATEST' ? updateTheme.accent : '#333'}`,
-              boxShadow: patch.status === 'LATEST' ? `0 0 15px ${updateTheme.accent}66` : 'none',
-              zIndex: 2
-            }} />
+        {PATCH_UPDATES.map((patch, index) => {
+          // Determine the "Vibe" based on status
+          const isFuture = patch.status === 'PLANNED';
+          const isCurrent = patch.status === 'LATEST';
+          const accentColor = isFuture ? updateTheme.future : isCurrent ? updateTheme.current : updateTheme.past;
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
-              <span style={{ 
-                background: patch.status === 'LATEST' ? updateTheme.accent : '#1a1a1a',
-                color: patch.status === 'LATEST' ? '#fff' : '#666',
-                padding: '6px 16px', borderRadius: '30px', fontSize: '12px', fontWeight: '800',
-                letterSpacing: '1.5px', border: patch.status === 'LATEST' ? 'none' : '1px solid #333'
-              }}>
-                {patch.version}
-              </span>
-              <span style={{ color: updateTheme.subtext, fontSize: '14px', fontWeight: '600', textTransform: 'uppercase' }}>
-                {patch.date}
-              </span>
+          return (
+            <div key={index} style={{ marginBottom: '80px', position: 'relative' }}>
+              
+              {/* --- 1. THE TIMELINE DOT --- */}
+              <div style={{
+                position: 'absolute', left: '-51px', top: '5px',
+                width: '20px', height: '20px', borderRadius: '50%',
+                backgroundColor: '#000', 
+                border: `4px solid ${accentColor}`,
+                boxShadow: !isFuture && !isCurrent ? 'none' : `0 0 15px ${accentColor}66`,
+                zIndex: 2
+              }} />
+
+              {/* --- 2. THE VERSION BADGE --- */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
+                <span style={{ 
+                  background: isCurrent ? accentColor : isFuture ? 'rgba(168, 85, 247, 0.1)' : '#1a1a1a',
+                  color: isCurrent ? '#fff' : isFuture ? updateTheme.future : '#666',
+                  padding: '6px 16px', borderRadius: '30px', fontSize: '12px', fontWeight: '800',
+                  letterSpacing: '1.5px', 
+                  border: isCurrent ? 'none' : `1px solid ${accentColor === updateTheme.past ? '#333' : accentColor + '44'}`
+                }}>
+                  {patch.version}
+                </span>
+                <span style={{ color: updateTheme.subtext, fontSize: '14px', fontWeight: '600', textTransform: 'uppercase' }}>
+                  {patch.date}
+                </span>
+              </div>
+
+              {/* --- 3. THE CONTENT --- */}
+              <h2 style={{ color: isFuture ? '#fff' : '#fff', fontSize: '28px', marginBottom: '12px', fontWeight: '700' }}>
+                {patch.title}
+              </h2>
+              <p style={{ color: '#666', fontStyle: 'italic', marginBottom: '25px', fontSize: '1.05rem', lineHeight: '1.6' }}>
+                {patch.description}
+              </p>
+              
+              <ul style={{ color: updateTheme.text, lineHeight: '2.2', listStyleType: 'none', padding: 0 }}>
+                {patch.features.map((feat, i) => (
+                  <li key={i} style={{ marginBottom: '12px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                    <span style={{ color: accentColor, fontSize: '1.2rem' }}>
+                      {isFuture ? '✨' : '•'}
+                    </span> 
+                    <span style={{ color: isFuture ? '#888' : '#bbb' }}>{feat}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-
-            <h2 style={{ color: '#fff', fontSize: '28px', marginBottom: '12px', fontWeight: '700' }}>{patch.title}</h2>
-            <p style={{ color: '#666', fontStyle: 'italic', marginBottom: '25px', fontSize: '1.05rem', lineHeight: '1.6' }}>
-              {patch.description}
-            </p>
-            
-            <ul style={{ color: updateTheme.text, lineHeight: '2.2', listStyleType: 'none', padding: 0 }}>
-              {patch.features.map((feat, i) => (
-                <li key={i} style={{ marginBottom: '12px', display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <span style={{ color: updateTheme.accent, fontSize: '1.2rem' }}>•</span> 
-                  <span style={{ color: '#bbb' }}>{feat}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
