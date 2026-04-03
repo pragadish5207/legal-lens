@@ -3,14 +3,14 @@ export const PATCH_UPDATES = [
     version: "v2.5",
     date: "April 2026",
     status: "LATEST",
-    title: "The Dashboard Evolution",
-    description: "Transformed the app into a full-scale legal dashboard with real-time content.",
+    title: "The Dashboard Revolution",
+    description: "A major UI overhaul and content expansion to provide a '360-degree' legal experience.",
     features: [
-      "New 3-Column Desktop Layout for better multitasking",
-      "Interactive sidebars with 50+ Legal Tips and 50+ Case Studies",
-      "Multicolor Gradient branding for a premium 'Pro' look",
-      "Verification logic linking Case Studies directly to Google Search",
-      "Dual 20-second rotation timers for live content"
+      "New 3-Column Desktop Dashboard: A high-end workspace for document analysis.",
+      "The Knowledge Bank: 100+ rotating Legal Tips and Case Studies for real-time insights.",
+      "Smart Verification: Integrated 'Verify on Google' logic for all legal facts.",
+      "Privacy First: Full compliance with the DPDP Act 2023 for secure document processing.",
+      "Enhanced Multilingual Support: Optimized UX for 50+ regional Indian languages."
     ]
   },
   {
@@ -20,10 +20,10 @@ export const PATCH_UPDATES = [
     title: "Cyber Mode & Risk-O-Meter",
     description: "Introduced advanced visualization and theming for high-risk detection.",
     features: [
-      "Gamified Risk-O-Meter for visual threat assessment",
-      "Cyber Mode toggle with neon glowing UI",
-      "Indian Law Mode (Specialized for Act 1872)",
-      "Translation support for 50+ regional languages"
+      "Gamified Risk-O-Meter for visual threat assessment.",
+      "Cyber Mode toggle with neon glowing UI.",
+      "Indian Law Mode (Specialized for Act 1872).",
+      "Real-time translation for 50+ regional languages."
     ]
   },
   {
@@ -33,10 +33,10 @@ export const PATCH_UPDATES = [
     title: "Pan-India Legal Aid Integration",
     description: "Bridged the gap between AI analysis and real-world legal assistance.",
     features: [
-      "Integrated 750+ District Legal Services Authorities (DLSA)",
-      "Launched 'Find Legal Help Near You' search system",
-      "Added NALSA National Helpline (15100) direct access",
-      "Optimized document processing for 50+ regional languages"
+      "Integrated 750+ District Legal Services Authorities (DLSA).",
+      "Launched 'Find Legal Help Near You' search system.",
+      "Direct access to NALSA National Helpline (15100).",
+      "First-stage support for regional language reports."
     ]
   },
   {
@@ -46,10 +46,10 @@ export const PATCH_UPDATES = [
     title: "The Birth of Legal-Lens",
     description: "The very first version focused on core AI contract analysis.",
     features: [
-      "Basic Gemini 1.5 Flash API integration",
-      "Simple PDF and Image upload capability",
-      "Manual text analysis field",
-      "Offline status detection"
+      "Basic Gemini 1.5 Flash API integration.",
+      "PDF and Image upload capability.",
+      "Manual text analysis field.",
+      "Initial document risk scanning logic."
     ]
   }
 ];

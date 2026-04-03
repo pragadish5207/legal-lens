@@ -1,156 +1,190 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 
 function Contact() {
   const handleEmailClick = () => {
-    const subject = "Query regarding Legal-Lens Pro";
+    const subject = "Query regarding Legal-Lens Pro Dashboard";
     window.location.href = `mailto:pragadishwar5207@gmail.com?subject=${encodeURIComponent(subject)}`;
   };
 
   return (
     <div style={styles.container}>
-      {/* --- HEADER --- */}
+      <Helmet>
+        <title>Contact Founder | Legal-Lens Pro AI Legal Innovation</title>
+        <meta name="description" content="Connect with Pragadishwar, the founder of Legal-Lens Pro. Collaborate on AI legal-tech or report a feature request for Indian contract analysis." />
+      </Helmet>
+
+      {/* --- HERO SECTION --- */}
       <section style={styles.section}>
-        <h1 style={styles.heading}>Connect with the Developer</h1>
+        <h1 className="gradient-text" style={styles.heading}>Connect with the Founder</h1>
         <p style={styles.paragraph}>
-          Have questions about the <strong>AI Legal Scanner</strong> or want to collaborate 
-          on legal-tech innovation? We're building the future of <strong>Indian law transparency</strong>, 
-          one line of code at a time.
+          Have a technical query about the <strong>AI Legal Scanner</strong> or want to 
+          collaborate on legal-tech innovation? We're building the future of 
+          <strong> Indian law transparency</strong>, bridging the gap between commerce 
+          expertise and Generative AI.
         </p>
       </section>
 
       {/* --- CONTACT GRID --- */}
       <div style={styles.contactGrid}>
+        {/* Support Card */}
         <div style={styles.contactCard}>
-          <h2 style={styles.cardHeading}>📬 Official Support</h2>
-          <p style={styles.cardText}>For bug reports, feature requests, or business inquiries:</p>
-          <button onClick={handleEmailClick} style={styles.emailButton}>
-            pragadishwar5207@gmail.com
+          <div style={styles.cardIcon}>📬</div>
+          <h2 style={styles.cardHeading}>Official Support</h2>
+          <p style={styles.cardText}>
+            For business inquiries, API collaborations, or reporting high-risk scam patterns 
+            detected by the AI:
+          </p>
+          <button 
+            onClick={handleEmailClick} 
+            style={styles.emailButton}
+            className="live-pulse"
+          >
+            Email Pragadishwar
           </button>
         </div>
 
+        {/* Location Card */}
         <div style={styles.contactCard}>
-          <h2 style={styles.cardHeading}>📍 Location</h2>
+          <div style={styles.cardIcon}>📍</div>
+          <h2 style={styles.cardHeading}>Headquarters</h2>
           <p style={styles.cardText}>
-            Operating from the heart of <strong>Ahmedabad, Gujarat, India</strong>. 
+            Innovating from the industrial heart of <strong>Ahmedabad, Gujarat, India</strong>. 
             Rooted in the community at Gujarat Housing Board, Khokhara.
           </p>
+          <div style={{ marginTop: '15px', fontSize: '0.8rem', color: '#4facfe', fontWeight: 'bold' }}>
+            Open for Pan-India Legal Aid Projects
+          </div>
         </div>
       </div>
-
       {/* --- DEVELOPER BADGE --- */}
       <div style={styles.devBadge}>
         <div style={styles.avatar}>P</div>
         <div>
-          <h3 style={{ margin: 0, color: "#fff" }}>Pragadishwar </h3>
-          <p style={{ margin: 0, fontSize: "0.9rem", color: "#888" }}>
-            B.Com Student | AI Developer | Jio & Outskill Certified
+          <h3 style={{ margin: 0, color: "#fff", fontSize: '1.4rem' }}>Pragadishwar</h3>
+          <p style={{ margin: "5px 0 0 0", fontSize: "0.95rem", color: "#4facfe", fontWeight: 'bold' }}>
+            B.Com Student | AI Innovator | Jio & Outskill Certified
+          </p>
+          <p style={{ margin: "5px 0 0 0", fontSize: "0.85rem", color: "#777" }}>
+            Specializing in Generative AI Mastermind applications for Indian Law.
           </p>
         </div>
       </div>
 
-      {/* --- DISCLAIMER --- */}
+      {/* --- FINAL DISCLAIMER --- */}
       <p style={styles.disclaimer}>
-        <strong>Disclaimer:</strong> Legal-Lens Pro is an educational AI project. 
-        It does not replace professional legal counsel. For binding advice, 
-        please visit your nearest District Legal Services Authority (DLSA).
+        <strong>Legal Safety Notice:</strong> Legal-Lens Pro is an educational AI research project. 
+        It is designed to identify "red flags" and does not constitute a substitute for 
+        professional legal counsel. For binding legal advice or representation, please 
+        consult an advocate or your nearest <strong>District Legal Services Authority (DLSA)</strong>.
       </p>
-      </div>
+    </div>
   );
 }
 
 // --- STYLING ENGINE ---
 const styles = {
   container: {
-    padding: "60px 20px",
+    padding: "100px 20px",
     color: "#e0e0e0",
     maxWidth: "900px",
     margin: "0 auto",
-    lineHeight: "1.7",
+    lineHeight: "1.8",
     fontFamily: "'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     backgroundColor: "transparent"
   },
   section: {
-    marginBottom: "50px",
+    marginBottom: "60px",
     textAlign: "center"
   },
   heading: {
-    fontSize: "2.8rem",
-    marginBottom: "15px",
-    background: "linear-gradient(90deg, #4da6ff, #b3d9ff)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
-    fontWeight: "800"
+    fontSize: "3.5rem",
+    marginBottom: "20px",
+    fontWeight: "900",
+    letterSpacing: "-1px"
   },
   paragraph: {
-    fontSize: "1.1rem",
-    color: "#aaa",
-    marginBottom: "20px"
+    fontSize: "1.15rem",
+    color: "#888",
+    marginBottom: "30px",
+    maxWidth: "700px",
+    margin: "0 auto"
   },
   contactGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: "25px",
-    marginBottom: "50px"
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+    gap: "30px",
+    marginBottom: "60px"
   },
   contactCard: {
-    padding: "30px",
-    backgroundColor: "#111",
-    borderRadius: "20px",
-    border: "1px solid #222",
-    transition: "0.3s",
-    textAlign: "center"
+    padding: "40px",
+    backgroundColor: "rgba(255, 255, 255, 0.02)",
+    borderRadius: "24px",
+    border: "1px solid rgba(255, 255, 255, 0.05)",
+    transition: "0.3s ease",
+    textAlign: "center",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.2)"
   },
-  cardHeading: {
-    fontSize: "1.4rem",
-    color: "#4da6ff",
+  cardIcon: {
+    fontSize: "2.5rem",
     marginBottom: "15px"
   },
+  cardHeading: {
+    fontSize: "1.6rem",
+    color: "#fff",
+    marginBottom: "15px",
+    fontWeight: "700"
+  },
   cardText: {
-    fontSize: "0.95rem",
-    color: "#888",
-    lineHeight: "1.6"
+    fontSize: "1rem",
+    color: "#777",
+    lineHeight: "1.6",
+    marginBottom: "20px"
   },
   emailButton: {
-    marginTop: "15px",
-    padding: "10px 20px",
-    backgroundColor: "#1a1a1a",
-    color: "#4da6ff",
-    border: "1px solid #4da6ff",
-    borderRadius: "8px",
+    padding: "14px 28px",
+    backgroundColor: "#007bff",
+    color: "#fff",
+    border: "none",
+    borderRadius: "12px",
     cursor: "pointer",
     fontSize: "1rem",
     fontWeight: "bold",
-    transition: "0.3s"
+    transition: "0.3s",
+    boxShadow: "0 4px 15px rgba(0, 123, 255, 0.3)"
   },
   devBadge: {
     display: "flex",
     alignItems: "center",
-    gap: "20px",
-    padding: "25px",
-    backgroundColor: "rgba(77, 166, 255, 0.05)",
-    borderRadius: "15px",
-    border: "1px solid #4da6ff33",
-    marginBottom: "40px"
+    gap: "25px",
+    padding: "35px",
+    backgroundColor: "rgba(0, 123, 255, 0.03)",
+    borderRadius: "20px",
+    border: "1px solid rgba(0, 123, 255, 0.1)",
+    marginBottom: "60px",
+    backdropFilter: "blur(10px)"
   },
   avatar: {
-    width: "60px",
-    height: "60px",
-    backgroundColor: "#4da6ff",
-    color: "#000",
+    width: "70px",
+    height: "70px",
+    backgroundColor: "#007bff",
+    color: "#fff",
     borderRadius: "50%",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "1.5rem",
-    fontWeight: "bold"
+    fontSize: "1.8rem",
+    fontWeight: "900",
+    boxShadow: "0 0 20px rgba(0, 123, 255, 0.4)"
   },
   disclaimer: {
-    fontSize: "0.9rem",
+    fontSize: "0.95rem",
     color: "#555",
-    borderTop: "1px solid #222",
-    paddingTop: "30px",
+    borderTop: "1px solid #1a1a1a",
+    paddingTop: "40px",
     textAlign: "center",
-    fontStyle: "italic"
+    fontStyle: "italic",
+    lineHeight: "1.6"
   }
 };
 
